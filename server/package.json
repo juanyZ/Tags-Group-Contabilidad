@@ -1,0 +1,48 @@
+{
+  "name": "estudio-juridico-server",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "API REST del sistema de gestion para estudios juridicos",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "node --watch src/index.js",
+    "start": "node src/index.js",
+    "test": "node --test tests/",
+    "test:watch": "node --test --watch tests/",
+    "prisma:generate": "prisma generate",
+    "prisma:validate": "prisma validate",
+    "migrate:dev": "prisma migrate dev",
+    "migrate:deploy": "prisma migrate deploy",
+    "seed": "node prisma/seed.js",
+    "db:reset": "prisma migrate reset --force",
+    "limpiar": "node prisma/limpiar.js",
+    "seed:minimo": "node prisma/seed-minimo.js"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.22.0",
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dayjs": "^1.11.13",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0",
+    "multer": "^2.2.0",
+    "node-cron": "^4.6.0",
+    "nodemailer": "^9.0.6",
+    "pdfkit": "^0.15.1",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "prisma": "^5.22.0"
+  }
+}

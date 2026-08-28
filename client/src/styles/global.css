@@ -1,0 +1,1796 @@
+/* ==========================================================================
+   SISTEMA VISUAL — TAGS Group
+   ==========================================================================
+
+   Dirección: "editorial jurídico". Navy profundo como lienzo, dorado como
+   único acento de marca, crema para el texto. Densidad alta pero respirada:
+   es una herramienta de trabajo diario, no una landing.
+
+   Tres decisiones que ordenan todo lo demás:
+
+   1. LOS BORDES SON rgba BLANCO, NO UN NAVY MÁS CLARO. Sobre fondo oscuro, un
+      borde translúcido se integra con lo que tiene detrás y da sensación de
+      material; un borde de color plano se ve pegoteado y plano.
+
+   2. CADA SUPERFICIE ELEVADA LLEVA UN FILO DE LUZ ARRIBA
+      (inset 0 1px 0 rgba(255,255,255,.05)). Es lo que separa una tarjeta del
+      fondo sin necesidad de sombras pesadas.
+
+   3. TODO NÚMERO VA EN CIFRAS TABULARES. En una app llena de importes y
+      fechas, que los dígitos no bailen entre filas es la diferencia entre una
+      tabla que se lee y una que se descifra.
+
+   El color vive entero en variables: si cambia la marca, se cambia este bloque
+   y no hay que tocar una sola pantalla.
+   ========================================================================== */
+
+:root {
+  /* --- Lienzo y superficies ---------------------------------------------- */
+  --canvas: #070c14; /* fondo de la app, el punto más profundo */
+  --superficie: #0e1622; /* tarjetas y paneles */
+  --superficie-alta: #141e2d; /* cabeceras de tabla, elementos elevados */
+  --superficie-suave: #101a27; /* barra lateral */
+  --superficie-hover: #17222f;
+
+  /* Bordes translúcidos: se integran con lo que tienen detrás. */
+  --linea-sutil: rgba(255, 255, 255, 0.055);
+  --linea: rgba(255, 255, 255, 0.095);
+  --linea-fuerte: rgba(255, 255, 255, 0.16);
+
+  /* --- Dorado de marca ---------------------------------------------------- */
+  --oro-100: #f4e6c4;
+  --oro-200: #e8d09a;
+  --oro-300: #dcbc76;
+  --oro-400: #d0a856;
+  --oro: #c69a3e; /* el tono de la identidad */
+  --oro-600: #a87f2a;
+  --oro-700: #7d5d1e;
+  --oro-800: #4a3712;
+  --oro-tenue: rgba(198, 154, 62, 0.1);
+  --oro-tenue-alto: rgba(198, 154, 62, 0.18);
+
+  /* --- Texto -------------------------------------------------------------- */
+  --texto: #eeece6; /* crema, nunca blanco puro: sobre navy vibra */
+  --texto-2: #b9bcc4; /* secundario */
+  --texto-3: #8790a0; /* terciario, etiquetas */
+  --texto-4: #5d6675; /* deshabilitado, marcas de agua */
+
+  /* --- Semáforo de vencimientos ------------------------------------------
+     Ajustados para pasar contraste sobre el navy. El amarillo se separa a
+     propósito del dorado de marca: si fueran el mismo tono, un estado de
+     urgencia se confundiría con la decoración. */
+  --rojo: #f2555a;
+  --rojo-bg: rgba(242, 85, 90, 0.13);
+  --rojo-linea: rgba(242, 85, 90, 0.32);
+  --naranja: #f78f2e;
+  --naranja-bg: rgba(247, 143, 46, 0.13);
+  --naranja-linea: rgba(247, 143, 46, 0.32);
+  --amarillo: #edcb56;
+  --amarillo-bg: rgba(237, 203, 86, 0.12);
+  --amarillo-linea: rgba(237, 203, 86, 0.3);
+  --verde: #45b586;
+  --verde-bg: rgba(69, 181, 134, 0.13);
+  --verde-linea: rgba(69, 181, 134, 0.3);
+  --cian: #5e9cb0;
+  --cian-bg: rgba(94, 156, 176, 0.13);
+  --cian-linea: rgba(94, 156, 176, 0.3);
+  --neutro: #6f7a8a;
+  --neutro-bg: rgba(111, 122, 138, 0.13);
+  --neutro-linea: rgba(111, 122, 138, 0.28);
+
+  /* --- Tipografía --------------------------------------------------------- */
+  /* Serif solo para la marca: es lo que da el aire de papel membretado.
+     Ninguna fuente externa — la CSP las bloquea y no hacen falta. */
+  --fuente-marca: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia,
+    'Times New Roman', serif;
+  --fuente: ui-sans-serif, system-ui, -apple-system, 'Segoe UI Variable Text',
+    'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --mono: ui-monospace, 'Cascadia Mono', 'SF Mono', Menlo, Consolas, monospace;
+
+  --t-xs: 10.5px;
+  --t-sm: 12px;
+  --t-base: 13.5px;
+  --t-md: 15px;
+  --t-lg: 17px;
+  --t-xl: 21px;
+  --t-2xl: 27px;
+  --t-3xl: 34px;
+
+  /* --- Espaciado (escala de 4) -------------------------------------------- */
+  --e1: 4px;
+  --e2: 8px;
+  --e3: 12px;
+  --e4: 16px;
+  --e5: 22px;
+  --e6: 30px;
+  --e7: 44px;
+
+  /* --- Radios y elevación -------------------------------------------------- */
+  --r-xs: 4px;
+  --r-sm: 6px;
+  --r: 10px;
+  --r-lg: 14px;
+
+  /* El filo de luz superior: el truco que da materialidad en modo oscuro. */
+  --filo: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --sombra-1: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --sombra-2: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --sombra-3: 0 18px 50px -12px rgba(0, 0, 0, 0.75);
+  --brillo-oro: 0 0 0 3px rgba(198, 154, 62, 0.18);
+
+  --sidebar: 244px;
+  --transicion: 140ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  color-scheme: dark;
+}
+
+/* ========================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--fuente);
+  font-size: var(--t-base);
+  line-height: 1.55;
+  color: var(--texto);
+  /* Un halo dorado muy tenue arriba a la derecha: da profundidad al lienzo
+     sin que se lea como un degradado. */
+  background:
+    radial-gradient(1200px 620px at 88% -12%, rgba(198, 154, 62, 0.055), transparent 60%),
+    var(--canvas);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-variant-numeric: tabular-nums;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--texto);
+}
+
+a {
+  color: var(--oro-300);
+  text-decoration: none;
+  transition: color var(--transicion);
+}
+a:hover {
+  color: var(--oro-100);
+}
+
+::selection {
+  background: var(--oro-tenue-alto);
+  color: var(--oro-100);
+}
+
+/* Foco visible SIEMPRE: la app se usa mucho con teclado (carga repetitiva). */
+:focus-visible {
+  outline: 2px solid var(--oro);
+  outline-offset: 2px;
+  border-radius: var(--r-xs);
+}
+
+/* --- Scrollbar ------------------------------------------------------------ */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.09);
+  border-radius: 8px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(198, 154, 62, 0.42);
+  background-clip: padding-box;
+}
+
+/* ==========================================================================
+   LAYOUT
+   ========================================================================== */
+
+.app {
+  display: grid;
+  grid-template-columns: var(--sidebar) minmax(0, 1fr);
+  height: 100vh;
+  overflow: hidden;
+}
+
+.contenido {
+  overflow-y: auto;
+  padding: var(--e5) var(--e6) var(--e7);
+  scroll-behavior: smooth;
+}
+
+/* --- Barra lateral -------------------------------------------------------- */
+.sidebar {
+  background: var(--superficie-suave);
+  border-right: 1px solid var(--linea-sutil);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.sidebar-marca {
+  padding: var(--e5) var(--e4) var(--e4);
+  border-bottom: 1px solid var(--linea-sutil);
+  position: relative;
+}
+
+/* Hairline dorada bajo la marca: el detalle de papel membretado. */
+.sidebar-marca::after {
+  content: '';
+  position: absolute;
+  left: var(--e4);
+  bottom: -1px;
+  width: 34px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--oro), transparent);
+}
+
+.sidebar-marca .logo {
+  font-family: var(--fuente-marca);
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  color: var(--oro-200);
+  text-transform: uppercase;
+  line-height: 1.2;
+}
+
+.sidebar-marca .bajada {
+  font-size: 9px;
+  letter-spacing: 0.26em;
+  color: var(--texto-4);
+  text-transform: uppercase;
+  margin-top: 5px;
+}
+
+.sidebar-marca .titular {
+  font-size: var(--t-sm);
+  color: var(--texto-3);
+  margin-top: var(--e3);
+  padding-top: var(--e3);
+  border-top: 1px solid var(--linea-sutil);
+}
+
+.sidebar-seccion {
+  padding: var(--e5) var(--e4) var(--e2);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--texto-4);
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 8px var(--e4);
+  color: var(--texto-2);
+  font-size: var(--t-base);
+  position: relative;
+  transition: background var(--transicion), color var(--transicion);
+}
+
+/* La barra activa se dibuja con ::before y se escala: así la transición se
+   siente como que la marca "crece", no como que aparece de golpe. */
+.nav-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--oro);
+  transform: scaleY(0);
+  transition: transform var(--transicion);
+}
+
+.nav-item:hover {
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--texto);
+}
+
+.nav-item.activo {
+  background: linear-gradient(90deg, var(--oro-tenue), transparent 72%);
+  color: var(--oro-200);
+  font-weight: 600;
+}
+
+.nav-item.activo::before {
+  transform: scaleY(1);
+}
+
+.nav-item .icono {
+  width: 18px;
+  text-align: center;
+  font-size: var(--t-base);
+  opacity: 0.75;
+  flex: none;
+}
+
+.nav-item.activo .icono {
+  opacity: 1;
+}
+
+.nav-badge {
+  margin-left: auto;
+  background: var(--rojo);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  min-width: 19px;
+  text-align: center;
+  padding: 1px 6px;
+  border-radius: 10px;
+  box-shadow: 0 0 0 3px rgba(242, 85, 90, 0.14);
+}
+
+/* Bloque de usuario, al pie de la barra */
+.sidebar-usuario {
+  margin-top: auto;
+  padding: var(--e3);
+  border-top: 1px solid var(--linea-sutil);
+}
+
+.usuario-tarjeta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: var(--e2);
+  border-radius: var(--r-sm);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--texto);
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: background var(--transicion), border-color var(--transicion);
+}
+
+.usuario-tarjeta:hover {
+  background: var(--superficie-hover);
+  border-color: var(--linea-sutil);
+}
+
+.avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  flex: none;
+  display: grid;
+  place-items: center;
+  font-size: var(--t-sm);
+  font-weight: 700;
+  color: var(--oro-100);
+  background: linear-gradient(145deg, var(--oro-700), var(--oro-800));
+  border: 1px solid var(--oro-600);
+}
+
+.usuario-tarjeta .datos-usuario {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.3;
+}
+
+.usuario-tarjeta .nombre {
+  font-size: var(--t-sm);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.usuario-tarjeta .rol {
+  font-size: var(--t-xs);
+  color: var(--texto-4);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.menu-usuario {
+  margin-top: var(--e1);
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  animation: desplegar 120ms ease-out;
+}
+
+@keyframes desplegar {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+/* --- Cabecera de pantalla -------------------------------------------------- */
+.topbar {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--e4);
+  margin-bottom: var(--e5);
+  flex-wrap: wrap;
+  padding-bottom: var(--e4);
+  border-bottom: 1px solid var(--linea-sutil);
+}
+
+.topbar > div:first-child {
+  flex: 1 1 340px;
+  min-width: 0;
+}
+
+.topbar h1 {
+  font-size: var(--t-xl);
+  letter-spacing: -0.02em;
+}
+
+.topbar .subtitulo {
+  font-size: var(--t-sm);
+  color: var(--texto-3);
+  margin-top: 3px;
+  max-width: 70ch;
+}
+
+.topbar-derecha {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--e2);
+  flex-wrap: wrap;
+}
+
+/* ==========================================================================
+   PANELES Y GRILLA
+   ========================================================================== */
+
+.panel {
+  background: var(--superficie);
+  border: 1px solid var(--linea-sutil);
+  border-radius: var(--r);
+  overflow: hidden;
+  box-shadow: var(--filo), var(--sombra-1);
+}
+
+.panel-titulo {
+  padding: 11px var(--e4);
+  border-bottom: 1px solid var(--linea-sutil);
+  font-size: var(--t-xs);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--oro-300);
+  display: flex;
+  align-items: center;
+  gap: var(--e2);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.022), transparent);
+}
+
+.panel-titulo > span:first-child {
+  opacity: 0.7;
+}
+
+.panel-cuerpo {
+  padding: var(--e4);
+}
+
+.grid {
+  display: grid;
+  gap: var(--e4);
+}
+.grid-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.grid-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.grid-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+/* Tabla principal + panel lateral. Por debajo de 1500px el panel se apila
+   abajo en vez de estrangular la tabla: mejor scrollear vertical que tener
+   dos paneles cortados. */
+.grid-principal {
+  display: grid;
+  gap: var(--e4);
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 1500px) {
+  .grid-principal {
+    grid-template-columns: minmax(0, 1fr) 340px;
+    align-items: start;
+  }
+}
+
+@media (max-width: 1240px) {
+  .grid-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 1080px) {
+  .grid-3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 720px) {
+  .grid-2,
+  .grid-3,
+  .grid-4 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================================================
+   TARJETA DE INDICADOR
+   ========================================================================== */
+
+.stat {
+  position: relative;
+  background: var(--superficie);
+  border: 1px solid var(--linea-sutil);
+  border-radius: var(--r);
+  padding: var(--e3) var(--e4) var(--e4);
+  box-shadow: var(--filo), var(--sombra-1);
+  overflow: hidden;
+  transition: border-color var(--transicion), transform var(--transicion);
+}
+
+/* Regla de color al tope, de extremo a extremo: identifica el indicador de un
+   vistazo sin necesidad de leer la etiqueta. */
+.stat::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  background: var(--linea-fuerte);
+}
+
+.stat:hover {
+  border-color: var(--linea);
+  transform: translateY(-1px);
+}
+
+.stat .etiqueta {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--texto-3);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: var(--e2);
+}
+
+.stat .valor {
+  font-size: var(--t-2xl);
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+  /* Los importes largos no deben romper la tarjeta. */
+  overflow-wrap: anywhere;
+}
+
+.stat .pie {
+  font-size: var(--t-sm);
+  color: var(--texto-4);
+  margin-top: 5px;
+}
+
+.stat.vencido::before {
+  background: linear-gradient(90deg, var(--rojo), transparent 85%);
+}
+.stat.vencido .valor {
+  color: var(--rojo);
+}
+.stat.hoy::before {
+  background: linear-gradient(90deg, var(--naranja), transparent 85%);
+}
+.stat.hoy .valor {
+  color: var(--naranja);
+}
+.stat.proximo::before {
+  background: linear-gradient(90deg, var(--amarillo), transparent 85%);
+}
+.stat.proximo .valor {
+  color: var(--amarillo);
+}
+.stat.oro::before {
+  background: linear-gradient(90deg, var(--oro), transparent 85%);
+}
+.stat.oro .valor {
+  color: var(--oro-200);
+}
+.stat.verde::before {
+  background: linear-gradient(90deg, var(--verde), transparent 85%);
+}
+.stat.verde .valor {
+  color: var(--verde);
+}
+
+/* ==========================================================================
+   BADGES Y CHIPS
+   ========================================================================== */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 9px 2px 7px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  border: 1px solid transparent;
+  line-height: 1.6;
+}
+
+.badge::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  flex: none;
+  box-shadow: 0 0 0 2px currentColor;
+  opacity: 0.9;
+}
+
+.badge.VENCIDO {
+  color: var(--rojo);
+  background: var(--rojo-bg);
+  border-color: var(--rojo-linea);
+}
+.badge.VENCE_HOY {
+  color: var(--naranja);
+  background: var(--naranja-bg);
+  border-color: var(--naranja-linea);
+}
+.badge.POR_VENCER {
+  color: var(--amarillo);
+  background: var(--amarillo-bg);
+  border-color: var(--amarillo-linea);
+}
+.badge.EN_FECHA {
+  color: var(--verde);
+  background: var(--verde-bg);
+  border-color: var(--verde-linea);
+}
+.badge.CUMPLIDO {
+  color: var(--cian);
+  background: var(--cian-bg);
+  border-color: var(--cian-linea);
+}
+.badge.SIN_FECHA,
+.badge.CANCELADO,
+.badge.HISTORICO,
+.badge.neutro {
+  color: var(--neutro);
+  background: var(--neutro-bg);
+  border-color: var(--neutro-linea);
+}
+.badge.oro {
+  color: var(--oro-200);
+  background: var(--oro-tenue);
+  border-color: rgba(198, 154, 62, 0.34);
+}
+
+/* El chip no lleva el punto del semáforo: es una etiqueta, no un estado. */
+.chip {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: var(--r-xs);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--texto-2);
+  border: 1px solid var(--linea-sutil);
+}
+.chip.ALTA {
+  background: var(--rojo-bg);
+  color: #f78c90;
+  border-color: var(--rojo-linea);
+}
+.chip.MEDIA {
+  background: var(--amarillo-bg);
+  color: var(--amarillo);
+  border-color: var(--amarillo-linea);
+}
+.chip.BAJA {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--texto-3);
+}
+
+/* ==========================================================================
+   TABLAS
+   ========================================================================== */
+
+.tabla-wrap {
+  overflow-x: auto;
+}
+
+table.tabla {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: var(--t-sm);
+}
+
+table.tabla th {
+  text-align: left;
+  padding: 9px var(--e3);
+  background: var(--superficie-alta);
+  color: var(--texto-3);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--linea);
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  /* El blur evita que las filas se "peguen" al header al hacer scroll. */
+  backdrop-filter: blur(8px);
+}
+
+table.tabla th.ordenable {
+  cursor: pointer;
+  user-select: none;
+  transition: color var(--transicion);
+}
+table.tabla th.ordenable:hover {
+  color: var(--oro-300);
+}
+
+table.tabla td {
+  padding: 9px var(--e3);
+  border-bottom: 1px solid var(--linea-sutil);
+  vertical-align: middle;
+  color: var(--texto-2);
+}
+
+table.tabla tbody tr {
+  transition: background var(--transicion);
+}
+
+table.tabla tbody tr:hover {
+  background: rgba(198, 154, 62, 0.045);
+}
+
+table.tabla tbody tr:hover td {
+  color: var(--texto);
+}
+
+table.tabla tbody tr:last-child td {
+  border-bottom: none;
+}
+
+table.tabla tbody tr.clickeable {
+  cursor: pointer;
+}
+
+table.tabla .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  /* Un importe partido en dos renglones es ilegible: antes se recorta la
+     columna que se rompe el numero. */
+  white-space: nowrap;
+}
+
+table.tabla .codigo {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.02em;
+  color: var(--texto-4);
+  white-space: nowrap;
+}
+
+/* Los botones de fila se atenúan hasta que el mouse entra en la fila: bajan el
+   ruido visual de la grilla sin esconder la acción (siguen siendo alcanzables
+   por teclado, porque solo cambia la opacidad). */
+table.tabla tbody tr td.acciones-fila > * {
+  opacity: 0.4;
+  transition: opacity var(--transicion);
+}
+table.tabla tbody tr:hover td.acciones-fila > *,
+table.tabla tbody tr:focus-within td.acciones-fila > * {
+  opacity: 1;
+}
+
+/* La columna de acciones queda FIJA a la derecha. En una tabla ancha que
+   scrollea en horizontal, es lo que evita tener que arrastrar hasta el final
+   para poder editar un renglón. */
+table.tabla .acciones-fila {
+  position: sticky;
+  right: 0;
+  z-index: 1;
+  background: var(--superficie);
+  /* Sombra hacia la izquierda: avisa que hay contenido tapado debajo. */
+  box-shadow: -10px 0 12px -8px rgba(0, 0, 0, 0.65);
+}
+
+table.tabla th.acciones-fila {
+  z-index: 3;
+  background: var(--superficie-alta);
+}
+
+/* El hover de la fila tiene que alcanzar también a la celda fija: si no, queda
+   un recuadro de otro color flotando a la derecha. */
+table.tabla tbody tr:hover td.acciones-fila {
+  background: #131d2a;
+}
+
+/* CELDA DE DOS LÍNEAS: el dato principal arriba y su contexto debajo.
+   Es el patrón que usan casi todas las grillas (nombre + tipo de persona,
+   carátula + cliente, rubro + detalle). Sin esto los dos <span> quedan en la
+   misma línea y el texto se lee pegado. */
+table.tabla td > div > span.negrita,
+table.tabla td > div > span.chico {
+  display: block;
+}
+
+.truncar {
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+}
+
+/* ==========================================================================
+   BOTONES
+   ========================================================================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 7px 14px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--linea);
+  background: rgba(255, 255, 255, 0.035);
+  color: var(--texto);
+  font-size: var(--t-base);
+  font-family: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: var(--filo);
+  transition: background var(--transicion), border-color var(--transicion),
+    color var(--transicion), transform var(--transicion);
+}
+
+.btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: var(--linea-fuerte);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn-primario {
+  background: linear-gradient(180deg, var(--oro-400), var(--oro-600));
+  border-color: var(--oro-600);
+  color: #16110a;
+  font-weight: 700;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+.btn-primario:hover:not(:disabled) {
+  background: linear-gradient(180deg, var(--oro-300), var(--oro-400));
+  border-color: var(--oro-400);
+  color: #16110a;
+}
+
+.btn-peligro {
+  color: #f78c90;
+  border-color: var(--rojo-linea);
+  background: transparent;
+}
+.btn-peligro:hover:not(:disabled) {
+  background: var(--rojo-bg);
+  border-color: var(--rojo);
+}
+
+.btn-sutil {
+  background: transparent;
+  border-color: transparent;
+  color: var(--texto-3);
+  padding: 4px 9px;
+  box-shadow: none;
+}
+.btn-sutil:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--texto);
+  border-color: transparent;
+}
+
+.btn-chico {
+  padding: 5px 11px;
+  font-size: var(--t-sm);
+}
+
+/* ==========================================================================
+   FORMULARIOS
+   ========================================================================== */
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: var(--e3);
+}
+
+.campo label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--texto-3);
+}
+
+.campo label .obligatorio {
+  color: var(--oro);
+  margin-left: 3px;
+}
+
+.campo input,
+.campo select,
+.campo textarea,
+.filtros input,
+.filtros select {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--linea);
+  border-radius: var(--r-sm);
+  color: var(--texto);
+  padding: 8px 11px;
+  font-size: var(--t-base);
+  font-family: inherit;
+  width: 100%;
+  transition: border-color var(--transicion), background var(--transicion),
+    box-shadow var(--transicion);
+}
+
+.campo input:hover:not(:disabled),
+.campo select:hover:not(:disabled),
+.campo textarea:hover:not(:disabled),
+.filtros input:hover,
+.filtros select:hover {
+  border-color: var(--linea-fuerte);
+}
+
+.campo input:focus,
+.campo select:focus,
+.campo textarea:focus,
+.filtros input:focus,
+.filtros select:focus {
+  outline: none;
+  border-color: var(--oro);
+  background: rgba(0, 0, 0, 0.35);
+  box-shadow: var(--brillo-oro);
+}
+
+.campo input::placeholder,
+.filtros input::placeholder {
+  color: var(--texto-4);
+}
+
+.campo input:disabled,
+.campo select:disabled,
+.campo textarea:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.campo textarea {
+  resize: vertical;
+  min-height: 70px;
+  line-height: 1.55;
+}
+
+/* El navegador pinta el desplegable nativo; al menos se le da la flecha propia. */
+.campo select,
+.filtros select {
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--texto-3) 50%),
+    linear-gradient(135deg, var(--texto-3) 50%, transparent 50%);
+  background-position: calc(100% - 15px) 52%, calc(100% - 10px) 52%;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 28px;
+}
+
+/* CAMPO CALCULADO: hereda la convención del Excel (lo que se carga vs. lo que
+   sale solo), traducida al modo oscuro. Borde punteado y dorado = no lo toques. */
+.campo.calculado input,
+.campo input[readonly] {
+  background: var(--oro-tenue);
+  border-style: dashed;
+  border-color: rgba(198, 154, 62, 0.34);
+  color: var(--oro-200);
+  cursor: default;
+  font-weight: 600;
+}
+
+.campo .ayuda {
+  font-size: 11px;
+  color: var(--texto-4);
+  line-height: 1.45;
+}
+
+.campo .error-campo {
+  font-size: 11.5px;
+  color: var(--rojo);
+  font-weight: 500;
+}
+
+.campo.con-error input,
+.campo.con-error select,
+.campo.con-error textarea {
+  border-color: var(--rojo);
+  background: var(--rojo-bg);
+}
+.campo.con-error input:focus,
+.campo.con-error select:focus,
+.campo.con-error textarea:focus {
+  box-shadow: 0 0 0 3px rgba(242, 85, 90, 0.16);
+}
+
+.campo-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin-bottom: var(--e3);
+  padding: 9px 11px;
+  border: 1px solid var(--linea-sutil);
+  border-radius: var(--r-sm);
+  background: rgba(255, 255, 255, 0.02);
+}
+.campo-check input {
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  accent-color: var(--oro);
+  cursor: pointer;
+  flex: none;
+}
+.campo-check label {
+  font-size: var(--t-base);
+  color: var(--texto-2);
+  cursor: pointer;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 400;
+}
+.campo-check label .ayuda {
+  display: block;
+  margin-top: 2px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 var(--e4);
+}
+.form-grid .ancho-total {
+  grid-column: 1 / -1;
+}
+@media (max-width: 660px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --- Barra de filtros ------------------------------------------------------ */
+.filtros {
+  display: flex;
+  gap: var(--e2);
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: var(--e4);
+}
+
+.filtros input,
+.filtros select {
+  width: auto;
+  min-width: 150px;
+  padding: 6px 10px;
+  font-size: var(--t-sm);
+}
+
+.filtros select {
+  padding-right: 26px;
+}
+
+.filtros input[type='search'] {
+  min-width: 270px;
+}
+
+/* ==========================================================================
+   MODAL
+   ========================================================================== */
+
+.modal-fondo {
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 6, 11, 0.72);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: var(--e7) var(--e4);
+  overflow-y: auto;
+  z-index: 100;
+  backdrop-filter: blur(3px);
+  animation: fundir 140ms ease-out;
+}
+
+@keyframes fundir {
+  from {
+    opacity: 0;
+  }
+}
+
+.modal {
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+  border-radius: var(--r-lg);
+  box-shadow: var(--sombra-3);
+  width: 100%;
+  max-width: 800px;
+  animation: emerger 180ms cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+.modal.chico {
+  max-width: 440px;
+}
+
+@keyframes emerger {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.985);
+  }
+}
+
+.modal-cabecera {
+  display: flex;
+  align-items: center;
+  padding: var(--e4) var(--e5);
+  border-bottom: 1px solid var(--linea-sutil);
+}
+
+.modal-cabecera h2 {
+  font-size: var(--t-md);
+  color: var(--texto);
+  font-weight: 600;
+}
+
+.modal-cuerpo {
+  padding: var(--e5);
+}
+
+.modal-pie {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--e2);
+  padding: var(--e3) var(--e5);
+  border-top: 1px solid var(--linea-sutil);
+  background: rgba(0, 0, 0, 0.18);
+  border-radius: 0 0 var(--r-lg) var(--r-lg);
+}
+
+/* ==========================================================================
+   ESTADOS DE PANTALLA
+   ========================================================================== */
+
+.estado {
+  padding: var(--e7) var(--e5);
+  text-align: center;
+  color: var(--texto-3);
+}
+
+.estado .icono-grande {
+  font-size: 26px;
+  color: var(--texto-4);
+  margin-bottom: var(--e3);
+  display: inline-grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 1px solid var(--linea-sutil);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.estado .titulo {
+  color: var(--texto);
+  font-size: var(--t-md);
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.estado.error .icono-grande {
+  color: var(--rojo);
+  border-color: var(--rojo-linea);
+  background: var(--rojo-bg);
+}
+.estado.error .titulo {
+  color: #f78c90;
+}
+
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--linea);
+  border-top-color: var(--oro);
+  border-radius: 50%;
+  animation: girar 700ms linear infinite;
+  margin: 0 auto var(--e3);
+}
+
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* --- Barra de progreso ----------------------------------------------------- */
+.progreso {
+  height: 5px;
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 3px;
+  overflow: hidden;
+  min-width: 50px;
+  flex: 1;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.progreso > div {
+  height: 100%;
+  background: linear-gradient(90deg, var(--oro-600), var(--oro-300));
+  border-radius: 3px;
+  transition: width 320ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.progreso.completo > div {
+  background: linear-gradient(90deg, #2f8a63, var(--verde));
+}
+
+/* --- Avisos ---------------------------------------------------------------- */
+.aviso {
+  display: flex;
+  gap: 11px;
+  padding: 11px var(--e4);
+  border-radius: var(--r-sm);
+  font-size: var(--t-sm);
+  border: 1px solid var(--oro-tenue-alto);
+  border-left: 3px solid var(--oro);
+  background: var(--oro-tenue);
+  color: var(--texto-2);
+  margin-bottom: var(--e4);
+  line-height: 1.55;
+}
+
+.aviso > span:first-child {
+  color: var(--oro);
+  flex: none;
+  font-size: var(--t-base);
+  line-height: 1.4;
+}
+
+.aviso.error {
+  border-color: var(--rojo-linea);
+  border-left-color: var(--rojo);
+  background: var(--rojo-bg);
+  color: #f5aeb0;
+}
+.aviso.error > span:first-child {
+  color: var(--rojo);
+}
+
+.aviso.exito {
+  border-color: var(--verde-linea);
+  border-left-color: var(--verde);
+  background: var(--verde-bg);
+  color: #8fd6b4;
+}
+.aviso.exito > span:first-child {
+  color: var(--verde);
+}
+
+/* --- Paginación ------------------------------------------------------------ */
+.paginacion {
+  display: flex;
+  align-items: center;
+  gap: var(--e3);
+  padding: var(--e3) var(--e1);
+  font-size: var(--t-sm);
+  color: var(--texto-3);
+  border-top: 1px solid var(--linea-sutil);
+  margin-top: -1px;
+}
+
+.paginacion .paginas {
+  margin-left: auto;
+  display: flex;
+  gap: var(--e2);
+  align-items: center;
+}
+
+/* ==========================================================================
+   LOGIN
+   ========================================================================== */
+
+.login-pantalla {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  background: var(--canvas);
+}
+
+/* Panel de marca: es lo que convierte un formulario suelto en la puerta de
+   entrada de un estudio. */
+.login-marca {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--e7) 8%;
+  background:
+    radial-gradient(760px 480px at 22% 18%, rgba(198, 154, 62, 0.14), transparent 62%),
+    linear-gradient(160deg, #0d1522, #070c14 62%);
+  border-right: 1px solid var(--linea-sutil);
+  overflow: hidden;
+}
+
+/* Filete dorado vertical sobre el borde: el detalle de membrete. */
+.login-marca::after {
+  content: '';
+  position: absolute;
+  right: -1px;
+  top: 18%;
+  bottom: 18%;
+  width: 2px;
+  background: linear-gradient(180deg, transparent, var(--oro-600), transparent);
+}
+
+.login-marca .wordmark {
+  font-family: var(--fuente-marca);
+  font-size: clamp(30px, 4.6vw, 52px);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--oro-200);
+  line-height: 1.05;
+}
+
+.login-marca .tagline {
+  font-size: clamp(10px, 1.1vw, 12px);
+  letter-spacing: 0.36em;
+  text-transform: uppercase;
+  color: var(--texto-4);
+  margin-top: var(--e3);
+}
+
+.login-marca .regla {
+  width: 76px;
+  height: 2px;
+  background: var(--oro);
+  margin: var(--e6) 0;
+}
+
+.login-marca .claim {
+  font-size: var(--t-md);
+  color: var(--texto-2);
+  max-width: 34ch;
+  line-height: 1.65;
+}
+
+.login-marca .pie-marca {
+  position: absolute;
+  left: 8%;
+  bottom: var(--e6);
+  font-size: var(--t-sm);
+  color: var(--texto-4);
+}
+
+.login-formulario {
+  display: grid;
+  place-items: center;
+  padding: var(--e6) var(--e5);
+}
+
+.login-caja {
+  width: 100%;
+  max-width: 372px;
+}
+
+.login-caja h1 {
+  font-size: var(--t-xl);
+  margin-bottom: 5px;
+}
+
+.login-caja .intro {
+  font-size: var(--t-sm);
+  color: var(--texto-3);
+  margin-bottom: var(--e6);
+}
+
+.login-caja .btn-primario {
+  width: 100%;
+  padding: 10px;
+  font-size: var(--t-md);
+  margin-top: var(--e2);
+}
+
+.login-caja .nota {
+  font-size: var(--t-sm);
+  color: var(--texto-4);
+  margin-top: var(--e5);
+  padding-top: var(--e4);
+  border-top: 1px solid var(--linea-sutil);
+  line-height: 1.6;
+}
+
+/* En pantallas chicas el panel de marca se colapsa a una franja superior. */
+@media (max-width: 900px) {
+  .login-pantalla {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+  .login-marca {
+    padding: var(--e6) var(--e5);
+    border-right: none;
+    border-bottom: 1px solid var(--linea-sutil);
+    text-align: center;
+    align-items: center;
+  }
+  .login-marca::after,
+  .login-marca .claim,
+  .login-marca .pie-marca {
+    display: none;
+  }
+  .login-marca .regla {
+    margin: var(--e4) auto 0;
+  }
+}
+
+/* ==========================================================================
+   CALENDARIO
+   ========================================================================== */
+
+.calendario {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  border-top: 1px solid var(--linea-sutil);
+}
+
+.calendario .cabecera-dia {
+  padding: 8px 6px;
+  background: var(--superficie-alta);
+  border-right: 1px solid var(--linea-sutil);
+  border-bottom: 1px solid var(--linea);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--texto-3);
+  text-align: center;
+}
+.calendario .cabecera-dia:nth-child(7n) {
+  border-right: none;
+}
+
+.calendario .dia {
+  min-height: 104px;
+  padding: 5px 6px 7px;
+  border-right: 1px solid var(--linea-sutil);
+  border-bottom: 1px solid var(--linea-sutil);
+  font-size: 11px;
+  position: relative;
+  transition: background var(--transicion);
+}
+.calendario .dia:nth-child(7n) {
+  border-right: none;
+}
+
+.calendario .dia:hover {
+  background: rgba(255, 255, 255, 0.022);
+}
+
+.calendario .dia.fuera-mes {
+  background: rgba(0, 0, 0, 0.26);
+}
+.calendario .dia.fuera-mes .numero {
+  color: var(--texto-4);
+  opacity: 0.45;
+}
+
+.calendario .dia.hoy {
+  background: var(--oro-tenue);
+  box-shadow: inset 0 0 0 1px var(--oro-600);
+}
+.calendario .dia.hoy .numero {
+  color: var(--oro-200);
+}
+
+.calendario .dia.con-vencido {
+  background: var(--rojo-bg);
+}
+
+.calendario .dia .numero {
+  font-weight: 700;
+  color: var(--texto-2);
+  font-size: 11.5px;
+  margin-bottom: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.calendario .evento {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  padding: 2px 4px;
+  border-radius: var(--r-xs);
+  margin-bottom: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background: rgba(255, 255, 255, 0.035);
+  color: var(--texto-2);
+  cursor: default;
+  transition: background var(--transicion);
+}
+
+.calendario .evento:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--texto);
+}
+
+.calendario .evento .punto {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  flex: none;
+}
+
+.calendario .mas {
+  font-size: 9.5px;
+  color: var(--oro-300);
+  font-weight: 600;
+  margin-top: 2px;
+  padding-left: 4px;
+}
+
+/* ==========================================================================
+   AGENDA
+   ========================================================================== */
+
+.agenda {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: var(--e2);
+}
+
+@media (max-width: 1280px) {
+  .agenda {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+@media (max-width: 780px) {
+  .agenda {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.tarjeta-dia {
+  background: var(--superficie);
+  border: 1px solid var(--linea-sutil);
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 158px;
+  box-shadow: var(--filo);
+  transition: border-color var(--transicion);
+}
+
+.tarjeta-dia:hover {
+  border-color: var(--linea);
+}
+
+.tarjeta-dia.es-hoy {
+  border-color: var(--oro-600);
+  box-shadow: var(--filo), 0 0 0 1px var(--oro-700), 0 6px 22px -8px rgba(198, 154, 62, 0.4);
+}
+
+.tarjeta-dia .cabecera {
+  background: var(--superficie-alta);
+  padding: 7px 6px;
+  text-align: center;
+  border-bottom: 1px solid var(--linea-sutil);
+}
+
+.tarjeta-dia.es-hoy .cabecera {
+  background: linear-gradient(180deg, var(--oro-400), var(--oro-600));
+  color: #16110a;
+}
+
+.tarjeta-dia .cabecera .nombre {
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.75;
+  font-weight: 600;
+}
+
+.tarjeta-dia .cabecera .fecha {
+  font-size: var(--t-md);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.tarjeta-dia .contador {
+  padding: 3px 6px;
+  text-align: center;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--oro-300);
+  background: var(--oro-tenue);
+  border-bottom: 1px solid var(--linea-sutil);
+}
+
+.tarjeta-dia .contador.vacio {
+  color: var(--texto-4);
+  background: transparent;
+  font-weight: 400;
+}
+
+.tarjeta-dia .lista {
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tarjeta-dia .item {
+  font-size: 10.5px;
+  line-height: 1.4;
+  color: var(--texto-2);
+  border-left: 2px solid var(--linea-fuerte);
+  padding-left: 6px;
+}
+
+.tarjeta-dia .item .hora {
+  color: var(--oro-300);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================================================
+   LISTAS DE DEFINICIÓN (fichas)
+   ========================================================================== */
+
+.datos {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 7px var(--e4);
+  font-size: var(--t-sm);
+  margin: 0;
+}
+.datos dt {
+  color: var(--texto-4);
+  text-align: right;
+  white-space: nowrap;
+  font-size: 11.5px;
+}
+.datos dd {
+  margin: 0;
+  color: var(--texto);
+  min-width: 0;
+}
+
+/* ==========================================================================
+   UTILIDADES
+   ========================================================================== */
+
+.oro {
+  color: var(--oro-300);
+}
+.gris {
+  color: var(--texto-4);
+}
+.rojo {
+  color: var(--rojo);
+}
+.verde {
+  color: var(--verde);
+}
+.negrita {
+  font-weight: 600;
+  color: var(--texto);
+}
+.mono {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+/* Badge + "3 dias por vencer": si no entran juntos, el texto baja. */
+.semaforo-dias {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+  row-gap: 2px;
+}
+.chico {
+  font-size: 11.5px;
+}
+.derecha {
+  text-align: right;
+}
+.fila {
+  display: flex;
+  align-items: center;
+  gap: var(--e2);
+}
+.fila-fin {
+  margin-left: auto;
+}
+.mt-16 {
+  margin-top: var(--e4);
+}
+.nowrap {
+  white-space: nowrap;
+}
+
+/* Respeta a quien pidió menos movimiento en el sistema operativo. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

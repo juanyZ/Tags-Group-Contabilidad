@@ -1,0 +1,763 @@
+// ============================================================================
+//  Modelo de datos - Sistema de gestion para estudio juridico
+//  MySQL 8 + Prisma
+//
+//  Principios que se aplican en todo el archivo:
+//   1. Toda relacion se resuelve por ID interno, nunca por texto. Renombrar un
+//      cliente, un juzgado o un rubro no desengancha ningun registro (era el
+//      talon de Aquiles de la planilla de Excel).
+//   2. Lo calculado NO se persiste. Semaforos, saldos, proximos vencimientos y
+//      dias restantes se derivan en el backend en tiempo de consulta. Si se
+//      guardaran, quedarian desactualizados apenas cambia la fecha de hoy.
+//   3. Las fechas de vencimiento son DATE puro (sin hora, sin zona horaria).
+//      Los sellos de auditoria son DATETIME en UTC. Ver src/utils/fechas.js.
+//   4. Borrado logico (eliminadoEn) en todo lo que tiene historial economico
+//      o procesal. Nada desaparece de la base.
+//   5. Columna `version` para bloqueo optimista: dos usuarios editando el mismo
+//      registro no se pisan en silencio, el segundo recibe 409.
+// ============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ===========================================================================
+//  SEGURIDAD Y ACCESO
+// ===========================================================================
+
+enum RolUsuario {
+  ADMIN // Dueno del estudio: todo, incluida la config y los usuarios.
+  ABOGADO // Carga y edita su trabajo; ve la economia del estudio.
+  SECRETARIA // Carga operativa (eventos, gastos, clientes); no toca honorarios.
+  LECTURA // Solo consulta.
+}
+
+model Usuario {
+  id           Int        @id @default(autoincrement())
+  email        String     @unique @db.VarChar(180)
+  nombre       String     @db.VarChar(160)
+  passwordHash String     @db.VarChar(255)
+  rol          RolUsuario @default(LECTURA)
+  activo       Boolean    @default(true)
+
+  // Defensa contra fuerza bruta: se persiste para que el bloqueo sobreviva a
+  // un reinicio del proceso y no dependa de memoria local.
+  intentosFallidos Int       @default(0)
+  bloqueadoHasta   DateTime?
+  ultimoLoginEn    DateTime?
+
+  // Un usuario puede estar vinculado a una ficha de abogado (para el filtro
+  // "solo mis causas"). No es obligatorio: la secretaria no es abogada.
+  abogado   Abogado? @relation(fields: [abogadoId], references: [id], onDelete: SetNull)
+  abogadoId Int?     @unique
+
+  creadoEn    DateTime  @default(now())
+  actualizado DateTime  @updatedAt
+  eliminadoEn DateTime?
+
+  refreshTokens  RefreshToken[]
+  auditorias     AuditLog[]
+  adjuntos       Adjunto[]
+  notificaciones Notificacion[]
+
+  @@index([rol])
+  @@map("usuarios")
+}
+
+model RefreshToken {
+  id Int @id @default(autoincrement())
+
+  // Se guarda el SHA-256 del token, nunca el token en claro: si se filtra la
+  // base, los refresh tokens no son utilizables.
+  tokenHash String @unique @db.VarChar(64)
+
+  // Familia de rotacion. Si llega un token ya usado, se revoca la familia
+  // entera: es la senal tipica de un refresh token robado.
+  familia String @db.VarChar(64)
+
+  usuario   Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuarioId Int
+
+  expiraEn   DateTime
+  usadoEn    DateTime?
+  revocadoEn DateTime?
+  ip         String?   @db.VarChar(64)
+  userAgent  String?   @db.VarChar(255)
+  creadoEn   DateTime  @default(now())
+
+  @@index([usuarioId])
+  @@index([familia])
+  @@map("refresh_tokens")
+}
+
+enum AccionAudit {
+  CREAR
+  ACTUALIZAR
+  ELIMINAR
+  RESTAURAR
+  LOGIN
+  LOGIN_FALLIDO
+  LOGOUT
+  DESCARGA
+}
+
+/// Un renglon por CAMPO modificado, no por operacion: permite responder
+/// "quien cambio el monto de este honorario y que decia antes".
+model AuditLog {
+  id Int @id @default(autoincrement())
+
+  usuario   Usuario? @relation(fields: [usuarioId], references: [id], onDelete: SetNull)
+  usuarioId Int?
+
+  entidad   String      @db.VarChar(60)
+  entidadId Int?
+  accion    AccionAudit
+  campo     String?     @db.VarChar(60)
+
+  valorAnterior String? @db.Text
+  valorNuevo    String? @db.Text
+
+  ip        String?  @db.VarChar(64)
+  userAgent String?  @db.VarChar(255)
+  creadoEn  DateTime @default(now())
+
+  @@index([entidad, entidadId])
+  @@index([usuarioId])
+  @@index([creadoEn])
+  @@map("audit_log")
+}
+
+// ===========================================================================
+//  CONFIGURACION Y LISTAS ADMINISTRABLES
+// ===========================================================================
+
+/// Fila unica (id = 1). Equivale a la solapa CONFIGURACION de la planilla.
+model ConfigEstudio {
+  id Int @id @default(1)
+
+  nombreEstudio String  @db.VarChar(160)
+  titular       String? @db.VarChar(160)
+  matricula     String? @db.VarChar(60)
+  cuit          String? @db.VarChar(20)
+  domicilio     String? @db.VarChar(200)
+  localidad     String? @db.VarChar(120)
+  telefono      String? @db.VarChar(60)
+  email         String? @db.VarChar(180)
+
+  anioTrabajo Int @default(2026)
+
+  /// Cuantos dias antes se enciende el semaforo amarillo (POR_VENCER).
+  diasPorVencer Int @default(7)
+
+  /// Horizonte del panel "proximos vencimientos" del tablero.
+  ventanaProximos Int @default(30)
+
+  /// Valor del JUS, por si se pactan honorarios en JUS. Se actualiza a mano.
+  valorJus Decimal @default(0) @db.Decimal(14, 2)
+
+  /// Jurisdiccion por defecto para el computo de plazos habiles.
+  jurisdiccionDefault String @default("NACION") @db.VarChar(60)
+
+  /// Meses por defecto de caducidad de instancia (se puede pisar por expediente).
+  mesesCaducidadDefault Int @default(6)
+
+  actualizado DateTime @updatedAt
+
+  @@map("config_estudio")
+}
+
+enum TipoCatalogo {
+  PROVINCIA
+  FUERO
+  ETAPA_PROCESAL
+  ESTADO_EXPEDIENTE
+  JUZGADO
+  ORIGEN_CONTACTO
+  TIPO_EVENTO
+  TIPO_EVENTO_RECURRENTE
+  MEDIO_PAGO
+  RUBRO_GASTO
+}
+
+/// Todas las listas de desplegables en una sola tabla administrable.
+/// Los items NUNCA se borran fisicamente: se desactivan (activo = false). Asi
+/// un registro viejo sigue mostrando su valor aunque la opcion ya no se ofrezca
+/// -- justo el problema que advertia la planilla: si borras un valor de una
+/// lista que ya usaste, ese registro queda con un texto que ya no existe.
+model CatalogoItem {
+  id     Int          @id @default(autoincrement())
+  tipo   TipoCatalogo
+  valor  String       @db.VarChar(160)
+  orden  Int          @default(0)
+  activo Boolean      @default(true)
+
+  /// Solo para RUBRO_GASTO: "EXPEDIENTE" o "ESTUDIO". Es lo que hace que el
+  /// desplegable de rubro dependa del tipo de gasto elegido.
+  scope String? @db.VarChar(20)
+
+  /// Semantica de negocio de la opcion:
+  ///  - ESTADO_EXPEDIENTE: si la causa cuenta como "activa" en el tablero
+  ///    (Concluido y Archivado van en false).
+  /// Para el resto de los tipos se ignora.
+  computaComoActivo Boolean @default(true)
+
+  creadoEn DateTime @default(now())
+
+  // --- Relaciones inversas (Prisma las exige explicitas) -------------------
+  clientesProvincia  Cliente[]          @relation("ClienteProvincia")
+  clientesOrigen     Cliente[]          @relation("ClienteOrigen")
+  expedientesFuero   Expediente[]       @relation("ExpedienteFuero")
+  expedientesJuzgado Expediente[]       @relation("ExpedienteJuzgado")
+  expedientesEtapa   Expediente[]       @relation("ExpedienteEtapa")
+  expedientesEstado  Expediente[]       @relation("ExpedienteEstado")
+  eventosTipo        EventoPuntual[]    @relation("EventoTipo")
+  recurrentesTipo    EventoRecurrente[] @relation("RecurrenteTipo")
+  gastosRubro        Gasto[]            @relation("GastoRubro")
+  gastosMedioPago    Gasto[]            @relation("GastoMedioPago")
+  pagosMedioPago     HonorarioPago[]    @relation("PagoMedioPago")
+  plazosFuero        PlazoTipo[]        @relation("PlazoFuero")
+
+  @@unique([tipo, valor])
+  @@index([tipo, activo, orden])
+  @@map("catalogo_items")
+}
+
+/// Abogados / responsables del estudio. Tabla propia y no simple texto, porque
+/// el tablero agrupa carga de trabajo por abogado y el RBAC filtra "mis causas".
+/// Puede existir sin usuario: un socio que no entra al sistema igual es responsable.
+model Abogado {
+  id        Int     @id @default(autoincrement())
+  nombre    String  @unique @db.VarChar(160)
+  matricula String? @db.VarChar(60)
+  email     String? @db.VarChar(180)
+  telefono  String? @db.VarChar(60)
+  activo    Boolean @default(true)
+
+  usuario Usuario?
+
+  clientes         Cliente[]
+  expedientes      Expediente[]
+  eventosPuntuales EventoPuntual[]
+  recurrentes      EventoRecurrente[]
+
+  creadoEn DateTime @default(now())
+
+  @@map("abogados")
+}
+
+// ===========================================================================
+//  CLIENTES
+// ===========================================================================
+
+enum TipoPersona {
+  FISICA
+  JURIDICA
+}
+
+enum EstadoCliente {
+  ACTIVO
+  POTENCIAL
+  INACTIVO
+  EX_CLIENTE
+}
+
+model Cliente {
+  id     Int    @id @default(autoincrement())
+  /// ID legible tipo CLI-001. Lo genera el backend, nunca el cliente HTTP.
+  codigo String @unique @db.VarChar(20)
+
+  tipoPersona TipoPersona
+  /// Apellido y nombre, o razon social. Es solo un dato: la llave es `id`.
+  nombre      String      @db.VarChar(200)
+  /// DNI o CUIT segun tipoPersona.
+  documento   String?     @db.VarChar(20)
+
+  /// Nacimiento de la persona fisica o constitucion de la sociedad.
+  fechaNacConstit DateTime? @db.Date
+
+  domicilio String? @db.VarChar(200)
+
+  provincia   CatalogoItem? @relation("ClienteProvincia", fields: [provinciaId], references: [id], onDelete: SetNull)
+  provinciaId Int?
+
+  telefono String? @db.VarChar(60)
+  email    String? @db.VarChar(180)
+
+  origen   CatalogoItem? @relation("ClienteOrigen", fields: [origenId], references: [id], onDelete: SetNull)
+  origenId Int?
+
+  estado    EstadoCliente @default(ACTIVO)
+  fechaAlta DateTime      @db.Date
+
+  abogado   Abogado? @relation(fields: [abogadoId], references: [id], onDelete: SetNull)
+  abogadoId Int?
+
+  observaciones String? @db.Text
+
+  expedientes Expediente[]
+  honorarios  Honorario[]
+
+  version     Int       @default(1)
+  creadoEn    DateTime  @default(now())
+  actualizado DateTime  @updatedAt
+  eliminadoEn DateTime?
+
+  @@index([nombre])
+  @@index([estado])
+  @@index([abogadoId])
+  @@index([eliminadoEn])
+  @@map("clientes")
+}
+
+// ===========================================================================
+//  EXPEDIENTES
+// ===========================================================================
+
+enum CaracterParte {
+  ACTOR
+  DEMANDADO
+  TERCERO
+  QUERELLANTE
+  CONSULTANTE
+}
+
+model Expediente {
+  id     Int    @id @default(autoincrement())
+  codigo String @unique @db.VarChar(20)
+
+  fechaInicio DateTime @db.Date
+  /// "Actor c/ Demandado s/ Objeto". Se puede corregir sin romper nada.
+  caratula    String   @db.VarChar(300)
+
+  cliente   Cliente @relation(fields: [clienteId], references: [id])
+  clienteId Int
+
+  caracter    CaracterParte
+  contraparte String?       @db.VarChar(200)
+
+  fuero   CatalogoItem? @relation("ExpedienteFuero", fields: [fueroId], references: [id], onDelete: SetNull)
+  fueroId Int?
+
+  juzgado   CatalogoItem? @relation("ExpedienteJuzgado", fields: [juzgadoId], references: [id], onDelete: SetNull)
+  juzgadoId Int?
+
+  numeroExpediente String? @db.VarChar(80)
+
+  etapa   CatalogoItem? @relation("ExpedienteEtapa", fields: [etapaId], references: [id], onDelete: SetNull)
+  etapaId Int?
+
+  estado   CatalogoItem? @relation("ExpedienteEstado", fields: [estadoId], references: [id], onDelete: SetNull)
+  estadoId Int?
+
+  abogado   Abogado? @relation(fields: [abogadoId], references: [id], onDelete: SetNull)
+  abogadoId Int?
+
+  ultimaActuacion DateTime? @db.Date
+  montoReclamado  Decimal?  @db.Decimal(14, 2)
+
+  /// Caducidad de instancia: meses desde la ultima actuacion. Si es null se usa
+  /// el default de la configuracion. Se deja por expediente porque el plazo
+  /// cambia segun fuero e instancia.
+  mesesCaducidad Int?
+
+  /// Fecha de prescripcion de la accion, si aplica. La carga el abogado: no se
+  /// infiere sola, porque depende del tipo de accion.
+  fechaPrescripcion DateTime? @db.Date
+
+  observaciones String? @db.Text
+
+  eventos    EventoPuntual[]
+  gastos     Gasto[]
+  honorarios Honorario[]
+
+  version     Int       @default(1)
+  creadoEn    DateTime  @default(now())
+  actualizado DateTime  @updatedAt
+  eliminadoEn DateTime?
+
+  @@index([clienteId])
+  @@index([abogadoId])
+  @@index([caratula])
+  @@index([estadoId])
+  @@index([eliminadoEn])
+  @@map("expedientes")
+}
+
+// ===========================================================================
+//  VENCIMIENTOS
+// ===========================================================================
+
+enum PrioridadEvento {
+  ALTA
+  MEDIA
+  BAJA
+}
+
+enum EstadoEvento {
+  PENDIENTE
+  EN_CURSO
+  CUMPLIDO
+  REPROGRAMADO
+  CANCELADO
+}
+
+model EventoPuntual {
+  id     Int    @id @default(autoincrement())
+  codigo String @unique @db.VarChar(20)
+
+  /// DATE puro: un vencimiento es un dia del calendario, no un instante.
+  fechaVto DateTime @db.Date
+  /// Hora opcional, como texto HH:mm. Es informativa (se muestra en agenda y
+  /// calendario) y no participa de ningun calculo, por eso no es DATETIME.
+  hora     String?  @db.VarChar(5)
+
+  tipo   CatalogoItem? @relation("EventoTipo", fields: [tipoId], references: [id], onDelete: SetNull)
+  tipoId Int?
+
+  descripcion String @db.VarChar(300)
+
+  /// Null = evento del estudio (no pertenece a ninguna causa).
+  expediente   Expediente? @relation(fields: [expedienteId], references: [id])
+  expedienteId Int?
+
+  responsable   Abogado? @relation(fields: [responsableId], references: [id], onDelete: SetNull)
+  responsableId Int?
+
+  prioridad PrioridadEvento @default(MEDIA)
+  estado    EstadoEvento    @default(PENDIENTE)
+
+  observaciones String? @db.Text
+
+  version     Int       @default(1)
+  creadoEn    DateTime  @default(now())
+  actualizado DateTime  @updatedAt
+  eliminadoEn DateTime?
+
+  // Indice compuesto: es el patron de acceso de casi todas las vistas
+  // (tablero, calendario, agenda), que filtran por estado y ordenan por fecha.
+  @@index([fechaVto, estado])
+  @@index([expedienteId])
+  @@index([responsableId])
+  @@index([eliminadoEn])
+  @@map("eventos_puntuales")
+}
+
+enum Periodicidad {
+  SEMANAL
+  QUINCENAL
+  MENSUAL
+  BIMESTRAL
+  TRIMESTRAL
+  CUATRIMESTRAL
+  SEMESTRAL
+  ANUAL
+}
+
+/// Eventos que se repiten. NO se materializan filas por ocurrencia: el proximo
+/// vencimiento y las ocurrencias de un mes se proyectan en memoria desde
+/// fechaBase + periodicidad (ver services/recurrentes.service.js).
+model EventoRecurrente {
+  id     Int    @id @default(autoincrement())
+  codigo String @unique @db.VarChar(20)
+
+  descripcion String @db.VarChar(300)
+
+  tipo   CatalogoItem? @relation("RecurrenteTipo", fields: [tipoId], references: [id], onDelete: SetNull)
+  tipoId Int?
+
+  periodicidad Periodicidad
+  /// La primera vez que ocurrio. Desde aca se cuenta todo.
+  fechaBase    DateTime     @db.Date
+
+  responsable   Abogado? @relation(fields: [responsableId], references: [id], onDelete: SetNull)
+  responsableId Int?
+
+  activo Boolean @default(true)
+
+  observaciones String? @db.Text
+
+  cumplimientos RecurrenteCumplimiento[]
+
+  version     Int       @default(1)
+  creadoEn    DateTime  @default(now())
+  actualizado DateTime  @updatedAt
+  eliminadoEn DateTime?
+
+  @@index([activo])
+  @@map("eventos_recurrentes")
+}
+
+/// Mejora sobre la planilla: en el Excel el cumplimiento era un tilde que habia
+/// que borrar a mano a fin de mes y no dejaba rastro. Aca cada periodo cumplido
+/// es un renglon con fecha y autor: queda el historial completo.
+model RecurrenteCumplimiento {
+  id Int @id @default(autoincrement())
+
+  recurrente   EventoRecurrente @relation(fields: [recurrenteId], references: [id], onDelete: Cascade)
+  recurrenteId Int
+
+  /// Clave del periodo cumplido, derivada de la ocurrencia: "2026-08-10".
+  /// Es la fecha de la ocurrencia proyectada, lo que la hace unica e idempotente.
+  periodoClave String @db.VarChar(20)
+
+  cumplidoEn  DateTime @default(now())
+  cumplidoPor String?  @db.VarChar(160)
+  observacion String?  @db.VarChar(300)
+
+  @@unique([recurrenteId, periodoClave])
+  @@index([periodoClave])
+  @@map("recurrente_cumplimientos")
+}
+
+// ===========================================================================
+//  HONORARIOS
+// ===========================================================================
+
+enum TipoPacto {
+  MONTO_FIJO
+  POR_ETAPAS
+  CUOTA_LITIS
+  POR_HORA
+  ABONO_MENSUAL
+}
+
+/// A diferencia del Excel, se admite MAS DE UN pacto por cliente (lo habitual:
+/// uno por causa). El bug de "cliente repetido que duplica el cobrado" no puede
+/// ocurrir porque el cobrado ya no es una columna que alguien escribe a mano:
+/// es la suma de los pagos registrados en honorario_pagos.
+model Honorario {
+  id     Int    @id @default(autoincrement())
+  codigo String @unique @db.VarChar(20)
+
+  cliente   Cliente @relation(fields: [clienteId], references: [id])
+  clienteId Int
+
+  /// Opcional: permite imputar el pacto a una causa concreta.
+  expediente   Expediente? @relation(fields: [expedienteId], references: [id])
+  expedienteId Int?
+
+  fechaPacto DateTime  @db.Date
+  tipoPacto  TipoPacto
+
+  montoPactado  Decimal @db.Decimal(14, 2)
+  /// 0, 10.5 o 21. Se guarda el porcentaje, no el importe: el IVA se recalcula.
+  ivaPorcentaje Decimal @default(21) @db.Decimal(5, 2)
+
+  observaciones String? @db.Text
+
+  pagos HonorarioPago[]
+
+  version     Int       @default(1)
+  creadoEn    DateTime  @default(now())
+  actualizado DateTime  @updatedAt
+  eliminadoEn DateTime?
+
+  @@index([clienteId])
+  @@index([expedienteId])
+  @@index([fechaPacto])
+  @@map("honorarios")
+}
+
+model HonorarioPago {
+  id Int @id @default(autoincrement())
+
+  honorario   Honorario @relation(fields: [honorarioId], references: [id], onDelete: Cascade)
+  honorarioId Int
+
+  fecha DateTime @db.Date
+  monto Decimal  @db.Decimal(14, 2)
+
+  medioPago   CatalogoItem? @relation("PagoMedioPago", fields: [medioPagoId], references: [id], onDelete: SetNull)
+  medioPagoId Int?
+
+  observacion String? @db.VarChar(300)
+
+  creadoEn DateTime @default(now())
+
+  @@index([honorarioId])
+  @@index([fecha])
+  @@map("honorario_pagos")
+}
+
+// ===========================================================================
+//  GASTOS
+// ===========================================================================
+
+enum TipoGasto {
+  /// Gasto de una causa (tasa, cedula, perito). Puede reintegrarse al estudio.
+  EXPEDIENTE
+  /// Gasto de estructura (alquiler, sueldos, servicios).
+  ESTUDIO
+}
+
+enum EstadoReintegro {
+  PENDIENTE
+  REINTEGRADO
+  NO_CORRESPONDE
+}
+
+model Gasto {
+  id     Int    @id @default(autoincrement())
+  codigo String @unique @db.VarChar(20)
+
+  fecha DateTime  @db.Date
+  tipo  TipoGasto
+
+  /// Obligatorio cuando tipo = EXPEDIENTE. Lo valida el service y se RECHAZA el
+  /// guardado; en la planilla la celda quedaba en rojo y el gasto se perdia.
+  expediente   Expediente? @relation(fields: [expedienteId], references: [id])
+  expedienteId Int?
+
+  rubro   CatalogoItem? @relation("GastoRubro", fields: [rubroId], references: [id], onDelete: SetNull)
+  rubroId Int?
+
+  detalle String? @db.VarChar(300)
+
+  medioPago   CatalogoItem? @relation("GastoMedioPago", fields: [medioPagoId], references: [id], onDelete: SetNull)
+  medioPagoId Int?
+
+  importe Decimal @db.Decimal(14, 2)
+
+  reembolsable    Boolean         @default(false)
+  estadoReintegro EstadoReintegro @default(NO_CORRESPONDE)
+
+  observaciones String? @db.Text
+
+  version     Int       @default(1)
+  creadoEn    DateTime  @default(now())
+  actualizado DateTime  @updatedAt
+  eliminadoEn DateTime?
+
+  @@index([fecha])
+  @@index([tipo])
+  @@index([expedienteId])
+  @@index([estadoReintegro])
+  @@map("gastos")
+}
+
+// ===========================================================================
+//  CALENDARIO PROCESAL (plazos en dias habiles)
+// ===========================================================================
+
+model Feriado {
+  id           Int      @id @default(autoincrement())
+  fecha        DateTime @db.Date
+  descripcion  String   @db.VarChar(160)
+  /// "NACION", "CABA", "BUENOS_AIRES"... Permite feriados provinciales.
+  jurisdiccion String   @default("NACION") @db.VarChar(60)
+
+  @@unique([fecha, jurisdiccion])
+  @@index([fecha])
+  @@map("feriados")
+}
+
+/// Feria judicial: rangos completos inhabiles (enero y julio en Nacion/CABA,
+/// pero se carga por jurisdiccion porque no es igual en todas las provincias).
+model FeriaJudicial {
+  id           Int      @id @default(autoincrement())
+  desde        DateTime @db.Date
+  hasta        DateTime @db.Date
+  descripcion  String   @db.VarChar(160)
+  jurisdiccion String   @default("NACION") @db.VarChar(60)
+
+  @@index([desde, hasta])
+  @@map("ferias_judiciales")
+}
+
+enum ComputoPlazo {
+  HABILES
+  CORRIDOS
+}
+
+/// Plazos tipicos que el estudio usa para calcular vencimientos. Son datos,
+/// no codigo: las reglas procesales cambian por fuero y jurisdiccion y las
+/// carga el estudio, el sistema solo hace la aritmetica del calendario.
+model PlazoTipo {
+  id      Int          @id @default(autoincrement())
+  nombre  String       @db.VarChar(160)
+  dias    Int
+  computo ComputoPlazo @default(HABILES)
+
+  fuero   CatalogoItem? @relation("PlazoFuero", fields: [fueroId], references: [id], onDelete: SetNull)
+  fueroId Int?
+
+  descripcion String? @db.VarChar(300)
+  activo      Boolean @default(true)
+
+  @@unique([nombre, fueroId])
+  @@map("plazo_tipos")
+}
+
+// ===========================================================================
+//  ADJUNTOS Y NOTIFICACIONES
+// ===========================================================================
+
+enum EntidadAdjunto {
+  EXPEDIENTE
+  EVENTO
+  CLIENTE
+  GASTO
+}
+
+/// Los archivos se guardan en disco FUERA del webroot, con nombre generado por
+/// el servidor. Esta tabla es la unica forma de llegar a ellos, y siempre
+/// pasando por el control de acceso del endpoint de descarga.
+model Adjunto {
+  id Int @id @default(autoincrement())
+
+  entidadTipo EntidadAdjunto
+  entidadId   Int
+
+  nombreOriginal String @db.VarChar(255)
+  /// Nombre en disco: uuid + extension validada. Nunca el nombre del usuario.
+  nombreArchivo  String @unique @db.VarChar(255)
+  mimeType       String @db.VarChar(120)
+  tamanoBytes    Int
+  /// SHA-256 del contenido: detecta duplicados y corrupcion.
+  hash           String @db.VarChar(64)
+
+  subidoPor   Usuario? @relation(fields: [subidoPorId], references: [id], onDelete: SetNull)
+  subidoPorId Int?
+
+  creadoEn    DateTime  @default(now())
+  eliminadoEn DateTime?
+
+  @@index([entidadTipo, entidadId])
+  @@map("adjuntos")
+}
+
+enum TipoNotificacion {
+  VENCIMIENTO
+  CADUCIDAD
+  PRESCRIPCION
+  SISTEMA
+}
+
+model Notificacion {
+  id Int @id @default(autoincrement())
+
+  usuario   Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuarioId Int
+
+  tipo    TipoNotificacion
+  titulo  String           @db.VarChar(200)
+  mensaje String           @db.Text
+
+  entidadTipo String? @db.VarChar(60)
+  entidadId   Int?
+
+  /// Clave de deduplicacion: evita que el cron mande diez veces la misma alerta.
+  claveDedupe String @db.VarChar(180)
+
+  leidaEn  DateTime?
+  creadoEn DateTime  @default(now())
+
+  @@unique([usuarioId, claveDedupe])
+  @@index([usuarioId, leidaEn])
+  @@map("notificaciones")
+}

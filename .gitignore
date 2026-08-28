@@ -1,0 +1,33 @@
+node_modules/
+dist/
+build/
+.env
+.env.local
+*.log
+npm-debug.log*
+coverage/
+uploads/
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Volcados de la base: nunca al repositorio (contienen datos de clientes).
+backups/
+*.sql.gz
+
+# --- Secretos: NUNCA al repositorio -------------------------------------
+# Las contrasenas de MySQL y el secreto de firma del JWT viven aca.
+# El archivo de referencia es .env.example, que si va versionado.
+.env
+.env.*
+!.env.example
+
+# --- Datos de clientes ---------------------------------------------------
+# Volcados de la base: llevan DNI, domicilios y causas de personas reales.
+backups/
+*.sql
+!server/prisma/migrations/**/*.sql
+
+# Adjuntos subidos por los usuarios (escritos, cedulas, comprobantes).
+uploads/

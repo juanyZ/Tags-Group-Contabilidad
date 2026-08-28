@@ -1,0 +1,77 @@
+# Entorno local completo: MySQL 8 + backend + frontend.
+# Los secretos NO viven acá: se leen del archivo .env de la raiz (ver .env.example).
+services:
+  db:
+    image: mysql:8.0
+    container_name: ej_db
+    restart: unless-stopped
+    # Zona horaria del contenedor: critica para que NOW() y las fechas coincidan con Argentina.
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_APP_USER}
+      MYSQL_PASSWORD: ${MYSQL_APP_PASSWORD}
+      TZ: America/Argentina/Buenos_Aires
+    command: --default-authentication-plugin=mysql_native_password --default-time-zone=-03:00
+    volumes:
+      - db_data:/var/lib/mysql
+      # Script de privilegios minimos: crea el usuario de migraciones y acota el de la app.
+      - ./server/prisma/docker-init:/docker-entrypoint-initdb.d:ro
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: ej_backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 4000
+      TZ: America/Argentina/Buenos_Aires
+      # El runtime usa el usuario SIN privilegios DDL.
+      DATABASE_URL: mysql://${MYSQL_APP_USER}:${MYSQL_APP_PASSWORD}@db:3306/${MYSQL_DATABASE}
+      # Las migraciones usan un usuario aparte, con DDL. Solo lo consume el comando de migracion.
+      MIGRATE_DATABASE_URL: mysql://${MYSQL_MIGRATE_USER}:${MYSQL_MIGRATE_PASSWORD}@db:3306/${MYSQL_DATABASE}
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
+      JWT_ACCESS_TTL: ${JWT_ACCESS_TTL:-15m}
+      REFRESH_TTL_DAYS: ${REFRESH_TTL_DAYS:-7}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173}
+      UPLOAD_DIR: /data/uploads
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      SMTP_FROM: ${SMTP_FROM:-}
+      NOTIFY_CRON_ENABLED: ${NOTIFY_CRON_ENABLED:-false}
+    volumes:
+      # Los adjuntos viven en un volumen, FUERA del webroot. Ojo: no entran en el dump de la DB.
+      - uploads_data:/data/uploads
+    ports:
+      - "${BACKEND_PORT:-4000}:4000"
+
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:4000/api/v1}
+    container_name: ej_frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "${FRONTEND_PORT:-5173}:80"
+
+volumes:
+  db_data:
+  uploads_data:

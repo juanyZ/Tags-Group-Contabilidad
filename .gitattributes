@@ -1,0 +1,13 @@
+# Normalizacion de fin de linea: el repositorio guarda LF y cada quien trabaja
+# con lo que le da su sistema. Sin esto, un clon en Windows y otro en Linux
+# muestran el archivo entero como modificado.
+* text=auto eol=lf
+
+# Binarios: nunca tocar.
+*.png binary
+*.jpg binary
+*.pdf binary
+*.ico binary
+
+# Los .sh tienen que quedar con LF si o si, o no arrancan dentro del contenedor.
+*.sh text eol=lf
