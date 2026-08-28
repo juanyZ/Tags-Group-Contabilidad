@@ -1,33 +1,44 @@
-node_modules/
-dist/
-build/
-.env
-.env.local
-*.log
-npm-debug.log*
-coverage/
-uploads/
-.DS_Store
-Thumbs.db
-.vscode/
-.idea/
+# ============================================================================
+#  Qué NO entra al repositorio
+# ============================================================================
+#  Este proyecto maneja datos personales sensibles (DNI, domicilios, causas
+#  judiciales) y credenciales de base de datos. Las dos primeras secciones no
+#  son preferencias de orden: son las que evitan una filtración.
+# ============================================================================
 
-# Volcados de la base: nunca al repositorio (contienen datos de clientes).
-backups/
-*.sql.gz
-
-# --- Secretos: NUNCA al repositorio -------------------------------------
-# Las contrasenas de MySQL y el secreto de firma del JWT viven aca.
-# El archivo de referencia es .env.example, que si va versionado.
+# --- SECRETOS ---------------------------------------------------------------
+# Contraseñas de MySQL y el secreto de firma del JWT. La referencia de qué
+# variables hacen falta está en .env.example, que sí va versionado.
 .env
 .env.*
 !.env.example
 
-# --- Datos de clientes ---------------------------------------------------
+# --- DATOS DE CLIENTES ------------------------------------------------------
 # Volcados de la base: llevan DNI, domicilios y causas de personas reales.
 backups/
 *.sql
+*.sql.gz
+# Las migraciones de Prisma SÍ van: sin ellas nadie puede levantar la base.
 !server/prisma/migrations/**/*.sql
 
-# Adjuntos subidos por los usuarios (escritos, cedulas, comprobantes).
+# Adjuntos subidos por los usuarios (escritos, cédulas, comprobantes).
+# Viven en disco, fuera del webroot, y nunca en el control de versiones.
 uploads/
+
+# --- DEPENDENCIAS Y ARTEFACTOS DE BUILD -------------------------------------
+node_modules/
+dist/
+build/
+coverage/
+
+# --- LOGS -------------------------------------------------------------------
+*.log
+npm-debug.log*
+yarn-error.log*
+
+# --- ENTORNO DE TRABAJO -----------------------------------------------------
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
