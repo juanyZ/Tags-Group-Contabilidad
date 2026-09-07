@@ -221,6 +221,98 @@ a:hover {
   scroll-behavior: smooth;
 }
 
+/* --- Botón de menú y marca, solo visibles en mobile/tablet ---------------- */
+.topbar-movil {
+  display: none;
+}
+
+.menu-movil-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex: none;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--linea);
+  background: rgba(255, 255, 255, 0.035);
+  color: var(--texto);
+  font-size: 16px;
+  cursor: pointer;
+  transition: background var(--transicion), border-color var(--transicion);
+}
+.menu-movil-btn:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: var(--linea-fuerte);
+}
+
+.topbar-movil-marca {
+  font-family: var(--fuente-marca);
+  font-size: 15px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--oro-200);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Fondo oscuro detras de la barra lateral cuando se abre como panel, en
+   mobile/tablet. Solo existe en el DOM mientras el panel esta abierto. */
+.sidebar-fondo {
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 6, 11, 0.62);
+  z-index: 200;
+  animation: fundir 140ms ease-out;
+}
+
+/* ==========================================================================
+   RESPONSIVE: por debajo de este ancho la barra lateral deja de ser una
+   columna fija y pasa a ser un panel que se desliza por encima del contenido.
+   Es el cambio que hace falta para que TODAS las pantallas (que son hijas de
+   este layout) dejen de competir por espacio horizontal en mobile/tablet.
+   ========================================================================== */
+@media (max-width: 880px) {
+  .app {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: var(--sidebar);
+    max-width: 82vw;
+    z-index: 210;
+    transform: translateX(-100%);
+    transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: var(--sombra-3);
+  }
+
+  .sidebar.abierto {
+    transform: translateX(0);
+  }
+
+  .topbar-movil {
+    display: flex;
+    align-items: center;
+    gap: var(--e3);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    margin: calc(-1 * var(--e4)) calc(-1 * var(--e4)) var(--e4);
+    padding: var(--e3) var(--e4);
+    background: var(--canvas);
+    border-bottom: 1px solid var(--linea-sutil);
+  }
+
+  .contenido {
+    padding: var(--e4) var(--e4) var(--e6);
+  }
+}
+
 /* --- Barra lateral -------------------------------------------------------- */
 .sidebar {
   background: var(--superficie-suave);
@@ -486,6 +578,8 @@ a:hover {
   color: var(--oro-300);
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
+  row-gap: 6px;
   gap: var(--e2);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.022), transparent);
 }
@@ -543,6 +637,17 @@ a:hover {
   .grid-3,
   .grid-4 {
     grid-template-columns: 1fr;
+  }
+}
+
+/* Calendario: listado (izquierda) + grilla del mes (derecha). Por debajo de
+   1100px se apilan, igual criterio que .grid-principal. */
+.grid-calendario {
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+}
+@media (max-width: 1100px) {
+  .grid-calendario {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
@@ -1129,9 +1234,19 @@ table.tabla td > div > span.chico {
 .filtros input,
 .filtros select {
   width: auto;
-  min-width: 150px;
+  min-width: min(150px, 100%);
   padding: 6px 10px;
   font-size: var(--t-sm);
+}
+
+/* Etiqueta con checkbox o con un <input type="date"> adentro ("Solo
+   pendientes", "Desde"/"hasta"): es un contenedor flex, y si se angosta su
+   propio texto se parte en dos lineas y queda pegado al control de al lado
+   (se ve como si se superpusieran). flex-shrink:0 hace que en vez de
+   angostarse, la etiqueta completa baje entera a la siguiente linea. */
+label.fila {
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .filtros select {
@@ -1139,7 +1254,21 @@ table.tabla td > div > span.chico {
 }
 
 .filtros input[type='search'] {
-  min-width: 270px;
+  min-width: min(270px, 100%);
+}
+
+/* En mobile/tablet, los selects e inputs quedan con el ancho nativo del
+   navegador (el del valor elegido), que da una fila pareja en desktop pero
+   despareja y apretada en pantallas chicas. Por debajo de 700px se reparten
+   parejos y el buscador pasa a ocupar toda la fila, que es lo que mas se usa. */
+@media (max-width: 700px) {
+  .filtros input[type='search'] {
+    flex: 1 1 100%;
+  }
+  .filtros select,
+  .filtros input:not([type='search']):not([type='checkbox']) {
+    flex: 1 1 150px;
+  }
 }
 
 /* ==========================================================================
@@ -1178,6 +1307,18 @@ table.tabla td > div > span.chico {
 
 .modal.chico {
   max-width: 440px;
+}
+
+@media (max-width: 600px) {
+  .modal-fondo {
+    padding: var(--e4) var(--e3);
+  }
+  .modal-cabecera,
+  .modal-cuerpo,
+  .modal-pie {
+    padding-left: var(--e4);
+    padding-right: var(--e4);
+  }
 }
 
 @keyframes emerger {
@@ -1337,6 +1478,8 @@ table.tabla td > div > span.chico {
 .paginacion {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
+  row-gap: var(--e2);
   gap: var(--e3);
   padding: var(--e3) var(--e1);
   font-size: var(--t-sm);
@@ -1494,10 +1637,23 @@ table.tabla td > div > span.chico {
    CALENDARIO
    ========================================================================== */
 
+/* En pantallas angostas, 7 columnas apretadas son ilegibles: se scrollea
+   horizontal en vez de achicar las celdas hasta volverlas inutiles (mismo
+   criterio que .tabla-wrap con las tablas). */
+.calendario-wrap {
+  overflow-x: auto;
+}
+
 .calendario {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
   border-top: 1px solid var(--linea-sutil);
+}
+
+@media (max-width: 720px) {
+  .calendario {
+    min-width: 620px;
+  }
 }
 
 .calendario .cabecera-dia {
@@ -1726,6 +1882,17 @@ table.tabla td > div > span.chico {
   margin: 0;
   color: var(--texto);
   min-width: 0;
+}
+
+@media (max-width: 480px) {
+  .datos {
+    grid-template-columns: 1fr;
+    gap: 2px var(--e4);
+  }
+  .datos dt {
+    text-align: left;
+    margin-top: 6px;
+  }
 }
 
 /* ==========================================================================

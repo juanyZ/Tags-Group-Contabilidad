@@ -42,7 +42,7 @@ export function CuentaCorriente() {
         <select
           value={elegido || ''}
           onChange={(e) => cambiarCliente(e.target.value)}
-          style={{ minWidth: 300 }}
+          style={{ minWidth: 'min(300px, 100%)' }}
         >
           <option value="">— Elegí un cliente —</option>
           {(clientes.data || []).map((c) => (

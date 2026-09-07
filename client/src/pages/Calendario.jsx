@@ -81,7 +81,7 @@ export function Calendario() {
         </select>
       </Cabecera>
 
-      <div className="grid" style={{ gridTemplateColumns: 'minmax(0, 5fr) minmax(0, 6fr)' }}>
+      <div className="grid grid-calendario">
         {/* --- Listado ordenado por urgencia --- */}
         <Panel
           titulo="Próximos vencimientos"
@@ -218,54 +218,56 @@ function GrillaMes({ datos }) {
   const MAX_POR_DIA = 4;
 
   return (
-    <div className="calendario">
-      {DIAS_SEMANA.map((d) => (
-        <div key={d} className="cabecera-dia">
-          {d}
-        </div>
-      ))}
-
-      {datos.semanas.map((semana) =>
-        semana.map((dia) => (
-          <div
-            key={dia.fecha}
-            className={
-              'dia' +
-              (dia.esDelMes ? '' : ' fuera-mes') +
-              (dia.esHoy ? ' hoy' : '') +
-              (dia.tieneVencido ? ' con-vencido' : '')
-            }
-          >
-            <div className="numero">{dia.dia}</div>
-
-            {dia.eventos.slice(0, MAX_POR_DIA).map((ev) => (
-              <div
-                key={ev.origen + '-' + ev.id + '-' + ev.fechaVto}
-                className="evento"
-                title={
-                  (ev.hora ? ev.hora + ' · ' : '') +
-                  ev.descripcion +
-                  (ev.expediente ? ' — ' + ev.expediente : '') +
-                  ' (' + ev.situacionEtiqueta + ')'
-                }
-              >
-                <span
-                  className="punto"
-                  style={{ background: COLOR[ev.situacion] || 'var(--neutro)' }}
-                />
-                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                  {ev.origen === 'RECURRENTE' ? '⟳ ' : ''}
-                  {ev.descripcion}
-                </span>
-              </div>
-            ))}
-
-            {dia.cantidad > MAX_POR_DIA ? (
-              <div className="mas">+{dia.cantidad - MAX_POR_DIA} más</div>
-            ) : null}
+    <div className="calendario-wrap">
+      <div className="calendario">
+        {DIAS_SEMANA.map((d) => (
+          <div key={d} className="cabecera-dia">
+            {d}
           </div>
-        ))
-      )}
+        ))}
+
+        {datos.semanas.map((semana) =>
+          semana.map((dia) => (
+            <div
+              key={dia.fecha}
+              className={
+                'dia' +
+                (dia.esDelMes ? '' : ' fuera-mes') +
+                (dia.esHoy ? ' hoy' : '') +
+                (dia.tieneVencido ? ' con-vencido' : '')
+              }
+            >
+              <div className="numero">{dia.dia}</div>
+
+              {dia.eventos.slice(0, MAX_POR_DIA).map((ev) => (
+                <div
+                  key={ev.origen + '-' + ev.id + '-' + ev.fechaVto}
+                  className="evento"
+                  title={
+                    (ev.hora ? ev.hora + ' · ' : '') +
+                    ev.descripcion +
+                    (ev.expediente ? ' — ' + ev.expediente : '') +
+                    ' (' + ev.situacionEtiqueta + ')'
+                  }
+                >
+                  <span
+                    className="punto"
+                    style={{ background: COLOR[ev.situacion] || 'var(--neutro)' }}
+                  />
+                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {ev.origen === 'RECURRENTE' ? '⟳ ' : ''}
+                    {ev.descripcion}
+                  </span>
+                </div>
+              ))}
+
+              {dia.cantidad > MAX_POR_DIA ? (
+                <div className="mas">+{dia.cantidad - MAX_POR_DIA} más</div>
+              ) : null}
+            </div>
+          ))
+        )}
+      </div>
     </div>
   );
 }
