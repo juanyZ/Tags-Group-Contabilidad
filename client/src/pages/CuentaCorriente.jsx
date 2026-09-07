@@ -80,10 +80,10 @@ function ResumenCartera({ onElegir }) {
   return (
     <>
       {t ? (
-        <div className="grid grid-3" style={{ marginBottom: 14 }}>
-          <Stat etiqueta="Facturado a la cartera" tono="oro" valor={pesos(t.facturado)} />
-          <Stat etiqueta="Cobrado" tono="verde" valor={pesos(t.cobrado)} />
-          <Stat etiqueta="Saldo total a cobrar" tono="vencido" valor={pesos(t.saldo)} />
+        <div className="grid-stats" style={{ marginBottom: 14 }}>
+          <Stat etiqueta="Facturado a la cartera" icono="▤" tono="oro" valor={pesos(t.facturado)} />
+          <Stat etiqueta="Cobrado" icono="✓" tono="verde" valor={pesos(t.cobrado)} />
+          <Stat etiqueta="Saldo total a cobrar" icono="⚑" tono="vencido" valor={pesos(t.saldo)} />
         </div>
       ) : null}
 
@@ -174,21 +174,28 @@ function DetalleCuenta({ clienteId }) {
 
   return (
     <>
-      <div className="grid grid-4" style={{ marginBottom: 14 }}>
-        <Stat etiqueta="Honorarios" valor={pesos(t.honorarios)} pie="Pactado con IVA" />
-        <Stat etiqueta="Gastos a reintegrar" valor={pesos(t.gastosAReintegrar)} pie="Los puso el estudio" />
-        <Stat etiqueta="Total facturado" tono="oro" valor={pesos(t.totalFacturado)} pie="Honorarios + gastos" />
-        <Stat etiqueta="Cobrado" tono="verde" valor={pesos(t.cobrado)} pie="Lo que ya pagó" />
+      <div className="grid-stats" style={{ marginBottom: 14 }}>
+        <Stat etiqueta="Honorarios" icono="▤" valor={pesos(t.honorarios)} pie="Pactado con IVA" />
+        <Stat etiqueta="Gastos a reintegrar" icono="↧" valor={pesos(t.gastosAReintegrar)} pie="Los puso el estudio" />
+        <Stat etiqueta="Total facturado" icono="$" tono="oro" valor={pesos(t.totalFacturado)} pie="Honorarios + gastos" />
+        <Stat etiqueta="Cobrado" icono="✓" tono="verde" valor={pesos(t.cobrado)} pie="Lo que ya pagó" />
       </div>
 
-      <div className="grid grid-4" style={{ marginBottom: 14 }}>
-        <Stat etiqueta="Saldo" tono="vencido" valor={pesos(t.saldo)} pie="Lo que debe hoy" />
-        <Stat etiqueta="% cancelado" valor={t.porcentajeCancelado + '%'} pie="Sobre el total facturado" />
-        <Stat etiqueta="Expedientes" valor={t.expedientes} pie="Causas del cliente" />
+      <div className="grid-stats" style={{ marginBottom: 14 }}>
+        <Stat etiqueta="Saldo" icono="⚑" tono="vencido" valor={pesos(t.saldo)} pie="Lo que debe hoy" />
+        <Stat etiqueta="% cancelado" icono="◔" valor={t.porcentajeCancelado + '%'} pie="Sobre el total facturado" />
+        <Stat etiqueta="Expedientes" icono="◫" valor={t.expedientes} pie="Causas del cliente" />
+        {/* No usa <Stat> porque el valor es un badge y no un numero, pero
+            respeta su estructura para que la tarjeta calce en la fila. */}
         <div className="stat">
-          <div className="etiqueta">Situación</div>
-          <div style={{ marginTop: 10 }}>
-            <Semaforo situacion={situacionSemaforo} texto={etiqueta(t.situacion)} />
+          <div className="stat-cabecera">
+            <div className="stat-texto">
+              <div className="etiqueta">Situación</div>
+              <Semaforo situacion={situacionSemaforo} texto={etiqueta(t.situacion)} />
+            </div>
+            <div className="icono" aria-hidden="true">
+              ◉
+            </div>
           </div>
           <div className="pie">Estado de la cuenta</div>
         </div>

@@ -94,31 +94,41 @@ function Detalle({ expedienteId }) {
 
   return (
     <>
-      <div className="grid grid-4" style={{ marginBottom: 14 }}>
-        <Stat etiqueta="Estado" valor={e.estado || '—'} pie="Situación procesal" />
-        <Stat etiqueta="Etapa procesal" valor={e.etapa || '—'} pie="En qué instancia está" />
+      <div className="grid-stats" style={{ marginBottom: 14 }}>
+        <Stat etiqueta="Estado" icono="◉" valor={e.estado || '—'} pie="Situación procesal" />
+        <Stat etiqueta="Etapa procesal" icono="⚖" valor={e.etapa || '—'} pie="En qué instancia está" />
+        {/* Fecha mas semaforo: no entra en <Stat>, pero copia su estructura
+            para no desalinearse del resto de la fila. */}
         <div className="stat">
-          <div className="etiqueta">Próximo vencimiento</div>
-          <div className="valor" style={{ fontSize: 20 }}>
-            {fecha(s.proximoVto)}
-          </div>
-          <div style={{ marginTop: 4 }}>
-            <SemaforoConDias item={{ situacion: s.situacion, situacionEtiqueta: s.situacionEtiqueta, diasTexto: s.diasTexto }} />
+          <div className="stat-cabecera">
+            <div className="stat-texto">
+              <div className="etiqueta">Próximo vencimiento</div>
+              <div className="valor" style={{ fontSize: 20 }}>
+                {fecha(s.proximoVto)}
+              </div>
+              <div style={{ marginTop: 6 }}>
+                <SemaforoConDias item={{ situacion: s.situacion, situacionEtiqueta: s.situacionEtiqueta, diasTexto: s.diasTexto }} />
+              </div>
+            </div>
+            <div className="icono" aria-hidden="true">
+              ◷
+            </div>
           </div>
         </div>
         <Stat
           etiqueta="Saldo del cliente"
+          icono="⚑"
           tono="vencido"
           valor={pesos(f.economia.saldoDelCliente)}
           pie="Lo que debe en total"
         />
       </div>
 
-      <div className="grid grid-4" style={{ marginBottom: 14 }}>
-        <Stat etiqueta="Movimientos" valor={s.movimientos} pie="Eventos registrados" />
-        <Stat etiqueta="Pendientes" tono="proximo" valor={s.pendientes} pie="Todavía sin cumplir" />
-        <Stat etiqueta="Vencidos" tono="vencido" valor={s.vencidos} pie="Plazos ya pasados" />
-        <Stat etiqueta="Cumplidos" tono="verde" valor={s.cumplidos} pie="Ya resueltos" />
+      <div className="grid-stats" style={{ marginBottom: 14 }}>
+        <Stat etiqueta="Movimientos" icono="≡" valor={s.movimientos} pie="Eventos registrados" />
+        <Stat etiqueta="Pendientes" icono="◔" tono="proximo" valor={s.pendientes} pie="Todavía sin cumplir" />
+        <Stat etiqueta="Vencidos" icono="⚠" tono="vencido" valor={s.vencidos} pie="Plazos ya pasados" />
+        <Stat etiqueta="Cumplidos" icono="✓" tono="verde" valor={s.cumplidos} pie="Ya resueltos" />
       </div>
 
       {/* Alertas procesales: caducidad y prescripción */}

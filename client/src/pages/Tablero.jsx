@@ -40,55 +40,60 @@ export function Tablero() {
       </Cabecera>
 
       {/* --- Fila de indicadores ------------------------------------------ */}
-      <div className="grid grid-4" style={{ marginBottom: 14 }}>
+      <div className="grid-stats" style={{ marginBottom: 14 }}>
         <Stat
           etiqueta="Vencidos"
-          icono="●"
+          icono="⚠"
           tono="vencido"
           valor={numero(d.alertas.vencidos)}
           pie="Plazos ya pasados · global"
         />
         <Stat
           etiqueta="Vencen hoy"
-          icono="●"
+          icono="◷"
           tono="hoy"
           valor={numero(d.alertas.venceHoy)}
           pie="Para hoy mismo · global"
         />
         <Stat
           etiqueta="Por vencer"
-          icono="●"
+          icono="◔"
           tono="proximo"
           valor={numero(d.alertas.porVencer)}
           pie={'Dentro de ' + d.parametros.umbralDias + ' días · global'}
         />
         <Stat
           etiqueta="Expedientes"
+          icono="◫"
           valor={numero(d.totales.expedientesActivos)}
           pie={'Causas activas de ' + d.totales.expedientesTotal + ' totales'}
         />
       </div>
 
-      <div className="grid grid-4" style={{ marginBottom: 14 }}>
+      <div className="grid-stats" style={{ marginBottom: 14 }}>
         <Stat
           etiqueta="Clientes"
+          icono="❑"
           valor={numero(d.totales.clientesActivos)}
           pie={'Activos de ' + d.totales.clientesTotal + ' en cartera'}
         />
         <Stat
           etiqueta="Facturado"
+          icono="▤"
           tono="oro"
           valor={pesos(d.resumenEconomico.facturado)}
           pie={'Honorarios del período'}
         />
         <Stat
           etiqueta="Cobrado"
+          icono="✓"
           tono="verde"
           valor={pesos(d.resumenEconomico.cobrado)}
           pie="Cobros del período"
         />
         <Stat
           etiqueta="Gastos"
+          icono="↧"
           valor={pesos(d.resumenEconomico.gastos)}
           pie="Salidas de caja del período"
         />

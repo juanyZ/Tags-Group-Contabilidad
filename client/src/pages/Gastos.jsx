@@ -127,12 +127,13 @@ export function Gastos() {
       </Cabecera>
 
       {r ? (
-        <div className="grid grid-4" style={{ marginBottom: 14 }}>
-          <Stat etiqueta="Total del período" valor={pesos(r.totalPeriodo)} pie={r.cantidad + ' gasto(s)'} />
-          <Stat etiqueta="Gastos de causas" valor={pesos(r.totalCausas)} pie="Imputables a expedientes" />
-          <Stat etiqueta="Gastos del estudio" valor={pesos(r.totalEstudio)} pie="Estructura fija" />
+        <div className="grid-stats" style={{ marginBottom: 14 }}>
+          <Stat etiqueta="Total del período" icono="$" valor={pesos(r.totalPeriodo)} pie={r.cantidad + ' gasto(s)'} />
+          <Stat etiqueta="Gastos de causas" icono="◫" valor={pesos(r.totalCausas)} pie="Imputables a expedientes" />
+          <Stat etiqueta="Gastos del estudio" icono="❑" valor={pesos(r.totalEstudio)} pie="Estructura fija" />
           <Stat
             etiqueta="A reintegrar"
+            icono="⚑"
             tono="oro"
             valor={pesos(r.totalAReintegrar)}
             pie="Histórico pendiente de cobro"

@@ -1,0 +1,1402 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+<meta charset="utf-8">
+<title>Manual de uso — Sistema de gestión TAGS Group</title>
+<style>
+  /* ==========================================================================
+     Manual de uso — hoja de estilo de impresión.
+     Se convierte a PDF con Chrome headless; ver docs/README del proyecto.
+     Paleta tomada de la identidad del estudio, adaptada a tinta sobre papel:
+     el navy pasa a ser el color del texto y el dorado queda como único acento.
+     ========================================================================== */
+
+  @page {
+    size: A4;
+    margin: 20mm 18mm 18mm;
+  }
+
+  :root {
+    --navy: #0a1019;
+    --navy-2: #26364b;
+    --oro: #8a6a1f;        /* el dorado, oscurecido para tener contraste en papel */
+    --oro-claro: #f5efe0;
+    --oro-linea: #d8c48c;
+    --texto: #1c232e;
+    --texto-2: #4a5464;
+    --texto-3: #6f7a89;
+    --linea: #d5d9df;
+    --linea-suave: #e7eaee;
+    --papel-2: #f7f8f9;
+    --rojo: #a32a2f;
+    --naranja: #a35a12;
+    --amarillo: #8a6a1f;
+    --verde: #1f6b4d;
+
+    --serif: 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+    --sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    --mono: 'Cascadia Mono', Consolas, 'Courier New', monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  body {
+    margin: 0;
+    font-family: var(--serif);
+    font-size: 10.5pt;
+    line-height: 1.6;
+    color: var(--texto);
+    background: #fff;
+  }
+
+  /* --- Portada ------------------------------------------------------------ */
+  .portada {
+    height: 247mm;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    page-break-after: always;
+  }
+
+  .portada-marca {
+    font-family: var(--sans);
+    font-size: 8pt;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--oro);
+  }
+
+  .portada-centro { padding-bottom: 30mm; }
+
+  .portada h1 {
+    font-size: 34pt;
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--navy);
+    margin: 0 0 6mm;
+  }
+
+  .portada .sub {
+    font-size: 13pt;
+    color: var(--texto-2);
+    max-width: 120mm;
+    margin: 0 0 10mm;
+  }
+
+  .portada .regla {
+    width: 40mm;
+    height: 3px;
+    background: var(--oro);
+    margin-bottom: 10mm;
+  }
+
+  .portada-pie {
+    font-family: var(--sans);
+    font-size: 8.5pt;
+    color: var(--texto-3);
+    border-top: 1px solid var(--linea);
+    padding-top: 4mm;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* --- Índice ------------------------------------------------------------- */
+  .indice { page-break-after: always; }
+
+  .indice ol {
+    list-style: none;
+    counter-reset: cap;
+    padding: 0;
+    margin: 0;
+    font-family: var(--sans);
+    font-size: 10pt;
+  }
+
+  .indice li {
+    counter-increment: cap;
+    display: flex;
+    gap: 4mm;
+    padding: 2.2mm 0;
+    border-bottom: 1px solid var(--linea-suave);
+    color: var(--navy-2);
+  }
+
+  .indice li::before {
+    content: counter(cap, decimal-leading-zero);
+    font-weight: 700;
+    color: var(--oro);
+    min-width: 8mm;
+  }
+
+  .indice .desc {
+    color: var(--texto-3);
+    font-size: 9pt;
+  }
+
+  /* --- Estructura de capítulos -------------------------------------------- */
+  h2 {
+    font-size: 18pt;
+    font-weight: 400;
+    color: var(--navy);
+    letter-spacing: -0.01em;
+    margin: 0 0 1mm;
+    padding-top: 2mm;
+    page-break-after: avoid;
+  }
+
+  h2 .num {
+    font-family: var(--sans);
+    font-size: 9pt;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    color: var(--oro);
+    display: block;
+    margin-bottom: 2mm;
+  }
+
+  h2 + .entradilla {
+    color: var(--texto-2);
+    font-size: 11pt;
+    margin: 0 0 6mm;
+    padding-bottom: 4mm;
+    border-bottom: 1px solid var(--oro-linea);
+  }
+
+  h3 {
+    font-family: var(--sans);
+    font-size: 11pt;
+    font-weight: 700;
+    color: var(--navy);
+    margin: 7mm 0 2mm;
+    page-break-after: avoid;
+  }
+
+  h4 {
+    font-family: var(--sans);
+    font-size: 9.5pt;
+    font-weight: 700;
+    color: var(--navy-2);
+    margin: 5mm 0 1.5mm;
+    page-break-after: avoid;
+  }
+
+  p { margin: 0 0 3mm; }
+
+  .capitulo { page-break-before: always; }
+
+  ul, ol.pasos { margin: 0 0 3mm; padding-left: 6mm; }
+  li { margin-bottom: 1.5mm; }
+
+  ol.pasos { counter-reset: paso; list-style: none; padding-left: 0; }
+  ol.pasos > li {
+    counter-increment: paso;
+    display: flex;
+    gap: 3mm;
+    margin-bottom: 2.5mm;
+  }
+  ol.pasos > li::before {
+    content: counter(paso);
+    font-family: var(--sans);
+    font-size: 8pt;
+    font-weight: 700;
+    color: #fff;
+    background: var(--navy);
+    min-width: 5mm;
+    height: 5mm;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 0.8mm;
+  }
+
+  strong { color: var(--navy); }
+
+  code {
+    font-family: var(--mono);
+    font-size: 0.88em;
+    background: var(--papel-2);
+    border: 1px solid var(--linea-suave);
+    border-radius: 2px;
+    padding: 0 1mm;
+  }
+
+  /* --- Tablas ------------------------------------------------------------- */
+  /* Las tablas pueden partirse entre páginas —hay una (la de permisos) que no
+     entra en una sola—, pero se parten bien: nunca al medio de una fila, y con
+     el encabezado repetido arriba en cada página. Forzar avoid en una tabla que
+     no entra hace que se desborde el margen inferior en vez de cortarse. */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--sans);
+    font-size: 8.8pt;
+    margin: 0 0 4mm;
+    page-break-inside: auto;
+  }
+
+  thead { display: table-header-group; }
+  tr { page-break-inside: avoid; }
+
+  th {
+    text-align: left;
+    font-size: 7.5pt;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--texto-2);
+    background: var(--papel-2);
+    border-bottom: 1.5px solid var(--linea);
+    padding: 2mm 2.5mm;
+  }
+
+  td {
+    padding: 2mm 2.5mm;
+    border-bottom: 1px solid var(--linea-suave);
+    vertical-align: top;
+    color: var(--texto);
+  }
+
+  td.campo { font-weight: 600; color: var(--navy); white-space: nowrap; }
+  td.centro, th.centro { text-align: center; }
+  .si { color: var(--verde); font-weight: 700; }
+  .no { color: var(--texto-3); }
+
+  /* --- Cajas -------------------------------------------------------------- */
+  .caja {
+    border: 1px solid var(--linea);
+    border-left: 3px solid var(--oro);
+    background: var(--papel-2);
+    padding: 3.5mm 4mm;
+    margin: 0 0 4mm;
+    page-break-inside: avoid;
+  }
+
+  .caja p:last-child { margin-bottom: 0; }
+
+  .caja .rotulo {
+    font-family: var(--sans);
+    font-size: 7.5pt;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--oro);
+    display: block;
+    margin-bottom: 1.5mm;
+  }
+
+  .caja.alerta { border-left-color: var(--rojo); }
+  .caja.alerta .rotulo { color: var(--rojo); }
+
+  /* --- Fichas de semáforo -------------------------------------------------- */
+  .semaforo { margin: 0 0 4mm; page-break-inside: avoid; }
+
+  .semaforo-fila {
+    display: flex;
+    align-items: baseline;
+    gap: 3mm;
+    padding: 2mm 0;
+    border-bottom: 1px solid var(--linea-suave);
+  }
+
+  .pastilla {
+    font-family: var(--sans);
+    font-size: 7.5pt;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 1mm 2.5mm;
+    border-radius: 10mm;
+    border: 1px solid;
+    white-space: nowrap;
+    min-width: 27mm;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .pastilla.vencido  { color: var(--rojo);     border-color: var(--rojo);     background: #fbeeee; }
+  .pastilla.hoy      { color: var(--naranja);  border-color: var(--naranja);  background: #fdf3e8; }
+  .pastilla.proximo  { color: var(--amarillo); border-color: var(--oro-linea); background: var(--oro-claro); }
+  .pastilla.enfecha  { color: var(--navy-2);   border-color: var(--linea);    background: var(--papel-2); }
+  .pastilla.cumplido { color: var(--verde);    border-color: var(--verde);    background: #eaf3ef; }
+  .pastilla.neutro   { color: var(--texto-3);  border-color: var(--linea);    background: #fff; }
+
+  /* --- Pie de capítulo ----------------------------------------------------- */
+  .nota-pie {
+    font-family: var(--sans);
+    font-size: 8pt;
+    color: var(--texto-3);
+    border-top: 1px solid var(--linea-suave);
+    padding-top: 2mm;
+    margin-top: 5mm;
+  }
+
+  .sin-quiebre { page-break-inside: avoid; }
+</style>
+</head>
+<body>
+
+<!-- ======================================================================= -->
+<!-- PORTADA                                                                  -->
+<!-- ======================================================================= -->
+<div class="portada">
+  <div class="portada-marca">TAGS Group · Estudio jurídico</div>
+
+  <div class="portada-centro">
+    <div class="regla"></div>
+    <h1>Manual de uso</h1>
+    <p class="sub">
+      Sistema de gestión de clientes, expedientes, vencimientos y economía del
+      estudio. Todo lo que hacía la planilla, y lo que la planilla no podía hacer.
+    </p>
+  </div>
+
+  <div class="portada-pie">
+    <span>Dr. Luis Tagliapietra · Mar del Plata</span>
+    <span>Versión 1.0</span>
+  </div>
+</div>
+
+<!-- ======================================================================= -->
+<!-- ÍNDICE                                                                   -->
+<!-- ======================================================================= -->
+<div class="indice">
+  <h2><span class="num">CONTENIDO</span>Qué hay en este manual</h2>
+  <p class="entradilla">
+    Los capítulos 1 a 3 conviene leerlos una vez, enteros. El resto es de
+    consulta: se busca la pantalla y se lee esa página.
+  </p>
+
+  <ol>
+    <li><span>Entrar al sistema<span class="desc"> — usuarios, contraseña, roles</span></span></li>
+    <li><span>Cómo está organizada la pantalla<span class="desc"> — barra lateral, período, tablas</span></span></li>
+    <li><span>El semáforo<span class="desc"> — la regla que atraviesa todo el sistema</span></span></li>
+    <li><span>Clientes<span class="desc"> — la base única de contactos</span></span></li>
+    <li><span>Expedientes<span class="desc"> — las causas del estudio</span></span></li>
+    <li><span>Vencimientos<span class="desc"> — audiencias, plazos, escritos, pericias</span></span></li>
+    <li><span>Eventos recurrentes<span class="desc"> — lo que se repite solo</span></span></li>
+    <li><span>Calendario y agenda semanal<span class="desc"> — las dos vistas de lo que viene</span></span></li>
+    <li><span>Honorarios y cobranzas<span class="desc"> — lo pactado y lo cobrado</span></span></li>
+    <li><span>Gastos<span class="desc"> — de causa, del estudio y reintegros</span></span></li>
+    <li><span>Cuenta corriente<span class="desc"> — debe, haber y saldo por cliente</span></span></li>
+    <li><span>Ficha del expediente<span class="desc"> — todo de una causa en una hoja</span></span></li>
+    <li><span>Configuración<span class="desc"> — datos, listas, abogados, usuarios, auditoría</span></span></li>
+    <li><span>Archivos adjuntos y exportaciones<span class="desc"> — PDF y CSV</span></span></li>
+    <li><span>Quién puede hacer qué<span class="desc"> — la tabla de permisos</span></span></li>
+    <li><span>Cuando algo no sale<span class="desc"> — los mensajes más frecuentes</span></span></li>
+    <li><span>Advertencia sobre el cómputo de plazos<span class="desc"> — leer antes de confiar</span></span></li>
+  </ol>
+</div>
+
+<!-- ======================================================================= -->
+<!-- 1. ENTRAR                                                                -->
+<!-- ======================================================================= -->
+<div class="capitulo">
+  <h2><span class="num">CAPÍTULO 1</span>Entrar al sistema</h2>
+  <p class="entradilla">
+    Cada persona del estudio entra con su propio usuario. No se comparten cuentas:
+    todo lo que se carga o se modifica queda registrado a nombre de quien lo hizo.
+  </p>
+
+  <h3>Iniciar sesión</h3>
+  <ol class="pasos">
+    <li>Abrí el sistema en el navegador con la dirección que te pasaron.</li>
+    <li>Escribí tu email y tu contraseña.</li>
+    <li>Entrás directo al <strong>Tablero</strong>, que es la pantalla de resumen.</li>
+  </ol>
+
+  <p>
+    Si te equivocás varias veces seguidas, la cuenta se bloquea sola por un rato.
+    Es a propósito: es lo que impide que alguien pruebe contraseñas de a miles.
+    Si te pasa, esperá unos minutos o pedile al administrador que te desbloquee.
+  </p>
+
+  <h3>Cambiar tu contraseña</h3>
+  <p>
+    Arriba a la derecha está tu nombre. Hacé clic ahí y vas a ver la opción de
+    cambiar la contraseña. Te pide la actual y la nueva.
+  </p>
+
+  <div class="caja">
+    <span class="rotulo">La primera vez</span>
+    <p>
+      El administrador te crea el usuario con una contraseña inicial. Cambiala
+      apenas entrés: mientras no lo hagas, esa contraseña la conoce otra persona.
+    </p>
+  </div>
+
+  <h3>Los cuatro roles</h3>
+  <p>
+    Lo que ves y lo que podés tocar depende de tu rol. No es una cuestión de
+    confianza sino de orden: menos botones a mano, menos posibilidades de romper
+    algo sin querer.
+  </p>
+
+  <table>
+    <thead>
+      <tr><th>Rol</th><th>Para quién</th><th>Qué puede hacer</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="campo">Administrador</td>
+        <td>El titular del estudio</td>
+        <td>Todo, incluida la configuración, los usuarios y la auditoría.</td>
+      </tr>
+      <tr>
+        <td class="campo">Abogado</td>
+        <td>Profesionales del estudio</td>
+        <td>Carga y edita todo el trabajo, pacta honorarios y registra cobros. No administra usuarios.</td>
+      </tr>
+      <tr>
+        <td class="campo">Secretaría</td>
+        <td>Apoyo administrativo</td>
+        <td>Carga clientes, expedientes, vencimientos y gastos. <strong>Consulta</strong> honorarios para informar saldos, pero no los pacta ni registra cobros.</td>
+      </tr>
+      <tr>
+        <td class="campo">Solo lectura</td>
+        <td>Consulta ocasional</td>
+        <td>Mira todo, no modifica nada.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>
+    Si un botón no te aparece, es porque tu rol no lo tiene habilitado. En el
+    capítulo 15 está la tabla completa.
+  </p>
+
+  <h3>Cerrar sesión</h3>
+  <p>
+    Desde el mismo menú de tu nombre. Conviene hacerlo si trabajás en una
+    computadora compartida. La sesión también caduca sola después de un rato
+    largo de inactividad.
+  </p>
+</div>
+
+<!-- ======================================================================= -->
+<!-- 2. LA PANTALLA                                                           -->
+<!-- ======================================================================= -->
+<div class="capitulo">
+  <h2><span class="num">CAPÍTULO 2</span>Cómo está organizada la pantalla</h2>
+  <p class="entradilla">
+    Las doce solapas de la planilla siguen estando, pero agrupadas por tipo de
+    trabajo en vez de puestas en fila.
+  </p>
+
+  <h3>La barra lateral</h3>
+  <table>
+    <thead>
+      <tr><th>Grupo</th><th>Pantallas</th><th>Para qué</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="campo">Resumen</td>
+        <td>Tablero</td>
+        <td>Todo el estudio de un vistazo. Es donde caés al entrar.</td>
+      </tr>
+      <tr>
+        <td class="campo">Operación</td>
+        <td>Clientes · Expedientes · Vencimientos · Recurrentes</td>
+        <td>El trabajo de todos los días: lo que se carga a mano.</td>
+      </tr>
+      <tr>
+        <td class="campo">Agenda</td>
+        <td>Calendario · Agenda semanal</td>
+        <td>Dos maneras de mirar lo que viene. No se carga nada acá.</td>
+      </tr>
+      <tr>
+        <td class="campo">Economía</td>
+        <td>Honorarios · Gastos · Cuenta corriente</td>
+        <td>La plata: lo pactado, lo cobrado, lo gastado y lo que falta entrar.</td>
+      </tr>
+      <tr>
+        <td class="campo">Consulta</td>
+        <td>Ficha del expediente · Configuración</td>
+        <td>La hoja completa de una causa, y los ajustes del sistema.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>
+    Sobre <strong>Vencimientos</strong> aparece un número rojo cuando hay plazos
+    atrasados. Es el dato que el estudio necesita ver apenas entra, sin tener que
+    ir al tablero a buscarlo.
+  </p>
+
+  <h3>El selector de período</h3>
+  <p>
+    Arriba a la derecha se elige mes y año. Ese período filtra los importes:
+    facturado, cobrado y gastos del mes que elijas.
+  </p>
+
+  <div class="caja alerta">
+    <span class="rotulo">Importante</span>
+    <p>
+      <strong>Las alertas de vencimientos no siguen el período.</strong> Vencidos,
+      vencen hoy y por vencer son siempre globales. Si filtrás agosto, un plazo
+      vencido de julio te va a seguir apareciendo — y tiene que ser así, porque un
+      plazo atrasado no deja de estarlo porque cambiaste el mes en pantalla.
+    </p>
+  </div>
+
+  <h3>Las tablas</h3>
+  <p>
+    Todas funcionan igual: se ordenan haciendo clic en el título de la columna,
+    tienen buscador arriba y paginado abajo. Muchas tienen además filtros propios.
+    Haciendo clic en una fila se abre el detalle o la edición.
+  </p>
+
+  <h3>Campos que se cargan y campos que se calculan</h3>
+  <p>
+    Se mantuvo la convención de la planilla: lo que <strong>cargás vos</strong>
+    tiene fondo propio y borde sólido; lo que el sistema <strong>calcula solo</strong>
+    va en dorado, con borde punteado, y no se puede escribir.
+  </p>
+  <p>
+    Un total con IVA, un saldo o un porcentaje de cobranza son siempre calculados.
+    Esa es justamente la diferencia con el Excel: ahí se podía escribir encima de
+    una fórmula y romperla sin darse cuenta.
+  </p>
+
+  <h3>Dos personas trabajando a la vez</h3>
+  <p>
+    El sistema es multiusuario de verdad. Si dos personas abren el mismo registro
+    y las dos guardan, la segunda recibe un aviso de que el registro cambió
+    mientras lo estaba editando, en vez de pisar el trabajo de la otra sin avisar.
+    En ese caso hay que volver a abrir el registro y rehacer el cambio.
+  </p>
+</div>
+
+<!-- ======================================================================= -->
+<!-- 3. SEMÁFORO                                                              -->
+<!-- ======================================================================= -->
+<div class="capitulo">
+  <h2><span class="num">CAPÍTULO 3</span>El semáforo</h2>
+  <p class="entradilla">
+    Es la regla que atraviesa todo el sistema. Un mismo plazo se ve igual en el
+    tablero, en el calendario, en la agenda y en la ficha, porque el estado se
+    calcula en un solo lugar.
+  </p>
+
+  <div class="semaforo">
+    <div class="semaforo-fila">
+      <span class="pastilla vencido">Vencido</span>
+      <span>La fecha ya pasó y el evento sigue sin cumplirse.</span>
+    </div>
+    <div class="semaforo-fila">
+      <span class="pastilla hoy">Vence hoy</span>
+      <span>Es para hoy mismo.</span>
+    </div>
+    <div class="semaforo-fila">
+      <span class="pastilla proximo">Por vencer</span>
+      <span>Cae dentro de los próximos días. Cuántos, se configura (capítulo 13).</span>
+    </div>
+    <div class="semaforo-fila">
+      <span class="pastilla enfecha">En fecha</span>
+      <span>Falta tiempo. No requiere atención todavía.</span>
+    </div>
+    <div class="semaforo-fila">
+      <span class="pastilla cumplido">Cumplido</span>
+      <span>Ya se hizo, con registro de cuándo y de quién lo marcó.</span>
+    </div>
+    <div class="semaforo-fila">
+      <span class="pastilla neutro">Cancelado</span>
+      <span>Ya no hay que hacerlo. No es lo mismo que cumplido, y por eso tiene estado propio.</span>
+    </div>
+    <div class="semaforo-fila">
+      <span class="pastilla neutro">Histórico</span>
+      <span>Una fecha pasada de un evento repetitivo que nadie tildó. Ver abajo.</span>
+    </div>
+  </div>
+
+  <h3>Por qué «cancelado» no es «cumplido»</h3>
+  <p>
+    Si una audiencia se cae, no se cumplió: no se hizo. Marcarla como cumplida
+    sería mentirle al historial de la causa. Por eso tiene un estado propio, gris,
+    que no cuenta ni como pendiente ni como logro.
+  </p>
+
+  <h3>Por qué los recurrentes viejos no salen en rojo</h3>
+  <p>
+    Un evento que se repite todos los meses genera fechas pasadas que nadie tildó.
+    El sistema no tiene manera de saber si la reunión de hace tres semanas se hizo
+    o no. Si las pintara todas de rojo, medio calendario estaría en alarma y el
+    rojo dejaría de significar algo. Por eso quedan como <strong>histórico</strong>,
+    en gris.
+  </p>
+
+  <div class="caja">
+    <span class="rotulo">De dónde sale el color</span>
+    <p>
+      El estado lo calcula el servidor y la pantalla solo lo pinta. Nunca vas a
+      ver dos pantallas diciendo cosas distintas del mismo plazo, que es
+      exactamente el problema que tenía la planilla cuando una fórmula se copiaba
+      mal a una solapa.
+    </p>
+  </div>
+</div>
+
+<!-- ======================================================================= -->
+<!-- 4. CLIENTES                                                              -->
+<!-- ======================================================================= -->
+<div class="capitulo">
+  <h2><span class="num">CAPÍTULO 4</span>Clientes</h2>
+  <p class="entradilla">
+    La base única de contactos del estudio: personas físicas y jurídicas. Todo lo
+    demás —expedientes, honorarios, cuenta corriente— se cuelga de acá.
+  </p>
+
+  <h3>Cargar un cliente</h3>
+  <ol class="pasos">
+    <li>Entrá a <strong>Clientes</strong> y tocá el botón de nuevo cliente.</li>
+    <li>Completá al menos el nombre y el tipo de persona.</li>
+    <li>Guardá. El sistema le asigna solo un código: <code>CLI-001</code>, <code>CLI-002</code>…</li>
+  </ol>
+
+  <table>
+    <thead>
+      <tr><th>Campo</th><th>Qué va</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="campo">Tipo de persona</td><td>Física o jurídica.</td></tr>
+      <tr><td class="campo">Nombre</td><td>Apellido y nombre, o razón social.</td></tr>
+      <tr><td class="campo">Documento</td><td>DNI o CUIT.</td></tr>
+      <tr><td class="campo">Fecha de alta</td><td>Desde cuándo es cliente del estudio.</td></tr>
+      <tr><td class="campo">Domicilio y provincia</td><td>La provincia sale de una lista configurable.</td></tr>
+      <tr><td class="campo">Teléfono y email</td><td>Contacto.</td></tr>
+      <tr><td class="campo">Origen del contacto</td><td>Cómo llegó al estudio. Lista configurable.</td></tr>
+      <tr><td class="campo">Estado</td><td>Activo, potencial, inactivo o ex cliente.</td></tr>
+      <tr><td class="campo">Abogado responsable</td><td>Quién lo atiende.</td></tr>
+      <tr><td class="campo">Observaciones</td><td>Texto libre.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="caja">
+    <span class="rotulo">La mejora sobre el Excel</span>
+    <p>
+      En la planilla, si renombrabas un cliente se desenganchaban sus expedientes y
+      honorarios. Acá el nombre es un dato más: la relación va por un identificador
+      interno. Podés corregir un nombre mal escrito cuando quieras, sin romper nada.
+    </p>
+    <p>
+      Y como el cliente es único, no se puede duplicar en dos renglones — que era
+      lo que hacía que el cobrado se contara dos veces.
+    </p>
+  </div>
+
+  <h3>Buscar</h3>
+  <p>
+    El buscador de arriba encuentra por nombre, código, DNI/CUIT o email. Hay
+    además filtros por estado y por abogado responsable.
+  </p>
+
+  <h3>Dar de baja</h3>
+  <p>
+    Un cliente no se borra: se da de baja. Sigue existiendo para el historial, sus
+    expedientes y sus movimientos quedan intactos, pero deja de aparecer en las
+    listas de carga. Si más adelante vuelve, se lo reactiva.
+  </p>
+
+  <h3>Exportar</h3>
+  <p>
+    El botón <strong>↓ CSV</strong> baja la lista completa para abrir en Excel.
+  </p>
+</div>
+
+<!-- ======================================================================= -->
+<!-- 5. EXPEDIENTES                                                           -->
+<!-- ======================================================================= -->
+<div class="capitulo">
+  <h2><span class="num">CAPÍTULO 5</span>Expedientes</h2>
+  <p class="entradilla">
+    Las causas del estudio, con su etapa, su estado y su seguimiento. Cada
+    expediente pertenece a un cliente.
+  </p>
+
+  <h3>Cargar un expediente</h3>
+  <ol class="pasos">
+    <li>Entrá a <strong>Expedientes</strong> y tocá nuevo.</li>
+    <li>Elegí el cliente. Si todavía no existe, cargalo primero en Clientes.</li>
+    <li>Escribí la carátula y completá lo que sepas.</li>
+    <li>Guardá. Queda con código <code>EXP-001</code>, <code>EXP-002</code>…</li>
+  </ol>
+
+  <table>
+    <thead>
+      <tr><th>Campo</th><th>Qué va</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="campo">Carátula</td><td>Como figura en el juzgado. Ej.: <em>Pérez, Juan c/ Logística Andina S.A. s/ Despido</em>.</td></tr>
+      <tr><td class="campo">Cliente</td><td>De la base de clientes.</td></tr>
+      <tr><td class="campo">Carácter en el juicio</td><td>Actor, demandado, tercero, querellante o consultante.</td></tr>
+      <tr><td class="campo">Contraparte</td><td>Contra quién.</td></tr>
+      <tr><td class="campo">N° de expediente</td><td>El número del juzgado.</td></tr>
+      <tr><td class="campo">Fuero / materia</td><td>Lista configurable.</td></tr>
+      <tr><td class="campo">Juzgado / organismo</td><td>Lista configurable.</td></tr>
+      <tr><td class="campo">Etapa procesal</td><td>En qué instancia está. Lista configurable.</td></tr>
+      <tr><td class="campo">Estado</td><td>Situación de la causa. Lista configurable.</td></tr>
+      <tr><td class="campo">Fecha de inicio</td><td>Cuándo empezó.</td></tr>
+      <tr><td class="campo">Última actuación</td><td><strong>Importante:</strong> desde acá se cuenta la caducidad.</td></tr>
+      <tr><td class="campo">Abogado responsable</td><td>Quién la lleva.</td></tr>
+      <tr><td class="campo">Monto reclamado</td><td>Importe en juego.</td></tr>
+      <tr><td class="campo">Caducidad (meses)</td><td>Si se deja vacío, usa el valor general de Configuración.</td></tr>
+      <tr><td class="campo">Fecha de prescripción</td><td>Si corresponde.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Caducidad y prescripción</h3>
+  <p>
+    El sistema avisa cuando una causa se acerca a la caducidad de instancia o a la
+    prescripción. La cuenta de la caducidad arranca en la <strong>última
+    actuación</strong>, así que ese campo hay que mantenerlo al día: si no se
+    actualiza, la alerta se dispara cuando no corresponde — o peor, no se dispara.
+  </p>
+
+  <p>
+    Las alertas aparecen en la ficha del expediente y en el tablero.
+  </p>
+
+  <h3>Exportar</h3>
+  <p>El botón <strong>↓ CSV</strong> baja la lista completa.</p>
+</div>
+
+<!-- ======================================================================= -->
+<!-- 6. VENCIMIENTOS                                                          -->
+<!-- ======================================================================= -->
+<div class="capitulo">
+  <h2><span class="num">CAPÍTULO 6</span>Vencimientos</h2>
+  <p class="entradilla">
+    Audiencias, plazos, escritos, pericias, mediaciones y reuniones: todo lo que
+    tiene una fecha propia y hay que hacer antes de que llegue.
+  </p>
+
+  <h3>Cargar un vencimiento</h3>
+  <ol class="pasos">
+    <li>Entrá a <strong>Vencimientos</strong> y tocá nuevo.</li>
+    <li>Poné la fecha, la descripción y el tipo.</li>
+    <li>Si es de una causa, elegí el expediente. Si es del estudio, dejalo vacío.</li>
+    <li>Guardá. Queda con código <code>EVT-001</code> y aparece en el calendario y la agenda.</li>
+  </ol>
+
+  <table>
+    <thead>
+      <tr><th>Campo</th><th>Qué va</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="campo">Fecha de vencimiento</td><td>El día en que vence.</td></tr>
+      <tr><td class="campo">Hora</td><td>Opcional. Es informativa: no cambia el semáforo.</td></tr>
+      <tr><td class="campo">Descripción</td><td>Qué hay que hacer, en concreto.</td></tr>
+      <tr><td class="campo">Tipo de evento</td><td>Audiencia, plazo, escrito, pericia… Lista configurable.</td></tr>
+      <tr><td class="campo">Responsable</td><td>Quién tiene que hacerlo.</td></tr>
+      <tr><td class="campo">Expediente</td><td>Opcional. Vacío = evento del estudio, sin causa.</td></tr>
+      <tr><td class="campo">Prioridad</td><td>Alta, media o baja.</td></tr>
+      <tr><td class="campo">Estado</td><td>Pendiente, en curso, cumplido, reprogramado o cancelado.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Marcar como cumplido</h3>
+  <p>
+    Desde la propia lista, sin abrir el registro. Queda guardado quién lo marcó y
+    cuándo, y el semáforo pasa a verde.
+  </p>
+
+  <h3>Reprogramar</h3>
+  <p>
+    Un evento reprogramado <strong>sigue contando como pendiente</strong>. Si la
+    fecha nueva ya pasó, vuelve a salir en rojo. Reprogramar no es una forma de
+    hacer desaparecer un plazo de las alertas.
+  </p>
+
+  <h3>Filtros</h3>
+  <p>
+    Además del buscador, se puede filtrar por situación del semáforo, por tipo, por
+    responsable y por expediente. El filtro «solo mis causas» limita la vista a lo
+    tuyo.
+  </p>
+
+  <h3>Exportar</h3>
+  <p>El botón <strong>↓ CSV</strong> baja la lista con los filtros aplicados.</p>
+</div>
+
+<!-- ======================================================================= -->
+<!-- 7. RECURRENTES                                                           -->
+<!-- ======================================================================= -->
+<div class="capitulo">
+  <h2><span class="num">CAPÍTULO 7</span>Eventos recurrentes</h2>
+  <p class="entradilla">
+    Lo que se repite: se carga una sola vez y el sistema proyecta las fechas que
+    siguen. Una declaración jurada mensual, una cuota, una reunión periódica.
+  </p>
+
+  <h3>Cargarlo</h3>
+  <ol class="pasos">
+    <li>Entrá a <strong>Recurrentes</strong> y tocá nuevo.</li>
+    <li>Describí el evento. Ej.: <em>Presentación DDJJ IVA del estudio</em>.</li>
+    <li>Elegí la periodicidad y poné la <strong>fecha base</strong>: la primera vez que ocurre.</li>
+    <li>Guardá. Queda con código <code>REC-001</code>.</li>
+  </ol>
+
+  <p>
+    Las periodicidades son: semanal, quincenal, mensual, bimestral, trimestral,
+    cuatrimestral, semestral y anual.
+  </p>
+
+  <h3>Cumplir un período</h3>
+  <p>
+    Cada ocurrencia se tilda por separado. Al marcar el período de agosto queda
+    registrado con su fecha y su autor, y el sistema pasa a mostrar el de
+    septiembre.
+  </p>
+
+  <div class="caja">
+    <span class="rotulo">La mejora sobre el Excel</span>
+    <p>
+      En la planilla el tilde de cumplido se borraba a mano cada mes y no quedaba
+      ningún rastro de los meses anteriores. Acá cada período cumplido queda
+      guardado: se puede ver el historial completo de qué se presentó y cuándo.
+    </p>
+  </div>
+
+  <h3>Desactivar</h3>
+  <p>
+    Cuando algo deja de repetirse, se desactiva con el campo <strong>Activo</strong>.
+    Deja de proyectar fechas nuevas, pero el historial de lo ya cumplido se conserva.
+  </p>
+</div>
+
+<!-- ======================================================================= -->
+<!-- 8. CALENDARIO Y AGENDA                                                   -->
+<!-- ======================================================================= -->
+<div class="capitulo">
+  <h2><span class="num">CAPÍTULO 8</span>Calendario y agenda semanal</h2>
+  <p class="entradilla">
+    Dos maneras de mirar lo mismo. Ninguna de las dos carga datos: son vistas de
+    los vencimientos y los recurrentes que ya existen.
+  </p>
+
+  <h3>Calendario</h3>
+  <p>
+    Unifica puntuales y recurrentes en una sola lista, ordenada por urgencia: lo
+    vencido arriba, lo cumplido al fondo. Debajo está la grilla del mes.
+  </p>
+  <p>
+    Sirve para la pregunta «¿qué es lo próximo que tengo que hacer?».
+  </p>
+
+  <h3>Agenda semanal</h3>
+  <p>
+    Una tarjeta por día, hasta 14 días para adelante, con todo lo que hay para
+    hacer ese día. Sirve para organizar la semana y para imprimir el trabajo de
+    los próximos días.
+  </p>
+
+  <div class="caja">
+    <span class="rotulo">Si algo no aparece</span>
+    <p>
+      Revisá que el vencimiento tenga fecha cargada y que no esté cancelado. Los
+      eventos recurrentes desactivados tampoco proyectan fechas nuevas.
+    </p>
+  </div>
+</div>
+
+<!-- ======================================================================= -->
+<!-- 9. HONORARIOS                                                            -->
+<!-- ======================================================================= -->
+<div class="capitulo">
+  <h2><span class="num">CAPÍTULO 9</span>Honorarios y cobranzas</h2>
+  <p class="entradilla">
+    Lo pactado y lo cobrado, con saldo, porcentaje y semáforo de cobranza. Solo
+    los abogados y el administrador pueden pactar y registrar cobros; secretaría
+    puede consultarlos para informarle el saldo a un cliente que llama.
+  </p>
+
+  <h3>Pactar honorarios</h3>
+  <ol class="pasos">
+    <li>Entrá a <strong>Honorarios</strong> y tocá nuevo.</li>
+    <li>Elegí el cliente. El expediente es opcional: hay pactos que no son de una causa puntual.</li>
+    <li>Poné la fecha, el tipo de pacto y el importe pactado.</li>
+    <li>Indicá el IVA. <strong>El total con IVA se calcula solo</strong> y no se puede escribir.</li>
+  </ol>
+
+  <h3>Registrar un cobro</h3>
+  <p>
+    Se abre el pacto y se agrega el cobro: fecha, monto y medio de pago. Se pueden
+    cargar todos los cobros parciales que haga falta.
+  </p>
+
+  <div class="caja">
+    <span class="rotulo">Por qué no hay un campo «cobrado»</span>
+    <p>
+      El cobrado es la <strong>suma de los pagos registrados</strong>. No existe una
+      casilla donde escribirlo, justamente para que no pueda quedar mal. En la
+      planilla, ese número se tipeaba a mano y bastaba con repetir un cliente en dos
+      renglones para contarlo dos veces.
+    </p>
+  </div>
+
+  <h3>Qué muestra la pantalla</h3>
+  <table>
+    <thead>
+      <tr><th>Indicador</th><th>Cómo sale</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="campo">Total pactado</td><td>Suma de los honorarios con IVA.</td></tr>
+      <tr><td class="campo">Total cobrado</td><td>Suma de todos los cobros registrados.</td></tr>
+      <tr><td class="campo">Saldo a cobrar</td><td>Pactado menos cobrado.</td></tr>
+      <tr><td class="campo">Cobrado en el período</td><td>Solo los cobros del mes elegido arriba.</td></tr>
+      <tr><td class="campo">% de cobranza</td><td>Cuánto del total ya entró.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Si el cliente pagó de más</h3>
+  <p>
+    El sistema lo detecta y lo avisa en pantalla, en vez de dejar un saldo negativo
+    silencioso. Conviene verificar si fue un adelanto o un error de carga.
+  </p>
+
+  <h3>Exportar</h3>
+  <p>El botón <strong>↓ CSV</strong> baja la lista completa.</p>
+</div>
+
+<!-- ======================================================================= -->
+<!-- 10. GASTOS                                                               -->
+<!-- ======================================================================= -->
+<div class="capitulo">
+  <h2><span class="num">CAPÍTULO 10</span>Gastos</h2>
+  <p class="entradilla">
+    Los gastos de causa y los del estudio, con control de qué falta que el cliente
+    reintegre.
+  </p>
+
+  <h3>Los dos tipos</h3>
+  <table>
+    <thead>
+      <tr><th>Tipo</th><th>Qué es</th><th>Expediente</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="campo">De causa</td>
+        <td>Tasa de justicia, pericia, cédula, mandamiento: algo que se pagó por un expediente concreto.</td>
+        <td><strong>Obligatorio</strong></td>
+      </tr>
+      <tr>
+        <td class="campo">Del estudio</td>
+        <td>Alquiler, servicios, librería: la estructura fija.</td>
+        <td>No lleva</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="caja alerta">
+    <span class="rotulo">Esto antes se perdía</span>
+    <p>
+      Un gasto marcado «de causa» sin expediente no se puede guardar: el sistema lo
+      rechaza con un mensaje claro. En la planilla ese renglón quedaba pintado de
+      rojo y, con el tiempo, se perdía — y con él, la posibilidad de cobrarlo.
+    </p>
+  </div>
+
+  <h3>Cargar un gasto</h3>
+  <ol class="pasos">
+    <li>Entrá a <strong>Gastos</strong> y tocá nuevo.</li>
+    <li>Elegí el tipo. Si es de causa, seleccioná el expediente.</li>
+    <li>Poné fecha, rubro, detalle e importe.</li>
+    <li>Si el cliente lo tiene que devolver, marcá <strong>«el cliente tiene que reintegrarlo»</strong>.</li>
+  </ol>
+
+  <h3>Reintegros</h3>
+  <p>
+    Los gastos marcados para reintegro van a la cuenta corriente del cliente y
+    suman a lo que debe. Cuando el cliente los devuelve, se cambia el estado del
+    reintegro. Los pendientes se ven juntos en el tablero.
+  </p>
+
+  <h3>Exportar</h3>
+  <p>
+    El botón <strong>↓ CSV</strong> baja los gastos <strong>del período
+    seleccionado</strong>, no la lista histórica.
+  </p>
+</div>
+
+<!-- ======================================================================= -->
+<!-- 11. CUENTA CORRIENTE                                                     -->
+<!-- ======================================================================= -->
+<div class="capitulo">
+  <h2><span class="num">CAPÍTULO 11</span>Cuenta corriente</h2>
+  <p class="entradilla">
+    El debe, el haber y el saldo de cada cliente. Esta pantalla no se carga: se
+    arma sola con los honorarios, los gastos a reintegrar y los cobros.
+  </p>
+
+  <h3>Cómo se forma el saldo</h3>
+  <table>
+    <thead>
+      <tr><th>Concepto</th><th>Efecto</th><th>De dónde sale</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="campo">Honorarios</td><td>Suma al debe</td><td>De los pactos, con IVA</td></tr>
+      <tr><td class="campo">Gastos a reintegrar</td><td>Suma al debe</td><td>De los gastos marcados para reintegro</td></tr>
+      <tr><td class="campo">Cobros</td><td>Suma al haber</td><td>De los pagos registrados</td></tr>
+      <tr><td class="campo">Saldo</td><td>Debe − haber</td><td>Calculado</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Las dos vistas</h3>
+  <p>
+    La primera pantalla lista todos los clientes con su saldo. Haciendo clic en uno
+    se abre su cuenta: los totales arriba y el detalle de movimientos ordenado por
+    fecha abajo.
+  </p>
+
+  <h3>Imprimir el estado de cuenta</h3>
+  <p>
+    Dentro de la cuenta de un cliente, el botón <strong>↓ PDF</strong> genera el
+    resumen para mandarle o entregarle.
+  </p>
+
+  <div class="caja">
+    <span class="rotulo">Si un número no cuadra</span>
+    <p>
+      No se corrige acá — no hay nada editable en esta pantalla. Se corrige en el
+      origen: el pacto de honorarios, el gasto o el cobro mal cargado. La cuenta se
+      rehace sola.
+    </p>
+  </div>
+</div>
+
+<!-- ======================================================================= -->
+<!-- 12. FICHA                                                                -->
+<!-- ======================================================================= -->
+<div class="capitulo">
+  <h2><span class="num">CAPÍTULO 12</span>Ficha del expediente</h2>
+  <p class="entradilla">
+    Todo de una causa en una sola hoja: datos, estado procesal, importes e
+    historial completo de movimientos. Es la pantalla para llevar a una reunión.
+  </p>
+
+  <h3>Qué muestra</h3>
+  <ul>
+    <li><strong>Estado y etapa procesal</strong>, con el próximo vencimiento y su semáforo.</li>
+    <li><strong>Seguimiento:</strong> movimientos, pendientes, vencidos y cumplidos.</li>
+    <li><strong>Importes:</strong> lo facturado de la causa y el saldo del cliente.</li>
+    <li><strong>Alertas</strong> de caducidad de instancia y de prescripción, si corresponden.</li>
+    <li><strong>Detalle de movimientos</strong> y <strong>gastos</strong> de la causa.</li>
+  </ul>
+
+  <h3>Imprimir la ficha</h3>
+  <p>
+    El botón <strong>↓ PDF</strong> genera la ficha completa.
+  </p>
+</div>
+
+<!-- ======================================================================= -->
+<!-- 13. CONFIGURACIÓN                                                        -->
+<!-- ======================================================================= -->
+<div class="capitulo">
+  <h2><span class="num">CAPÍTULO 13</span>Configuración</h2>
+  <p class="entradilla">
+    Seis solapas. Todos pueden mirarlas; modificarlas depende del rol, y buena
+    parte es exclusiva del administrador.
+  </p>
+
+  <h3>Datos y parámetros</h3>
+  <p>
+    Los datos del estudio (nombre, titular, matrícula, CUIT, domicilio, contacto)
+    que salen en los PDF, y los parámetros que cambian el comportamiento del sistema:
+  </p>
+
+  <table>
+    <thead>
+      <tr><th>Parámetro</th><th>Qué cambia</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="campo">Año de trabajo</td><td>El período que se abre por defecto.</td></tr>
+      <tr><td class="campo">Avisar «por vencer» con (días)</td><td>Con cuánta anticipación algo pasa a amarillo. <strong>Es el umbral del semáforo.</strong></td></tr>
+      <tr><td class="campo">Ventana de próximos vencimientos</td><td>Cuántos días para adelante mira el tablero.</td></tr>
+      <tr><td class="campo">Valor del JUS</td><td>Para los cálculos que lo usan.</td></tr>
+      <tr><td class="campo">Jurisdicción por defecto</td><td>La que se propone al cargar.</td></tr>
+      <tr><td class="campo">Caducidad por defecto (meses)</td><td>Se aplica a los expedientes que no tengan un valor propio.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Listas de desplegables</h3>
+  <p>
+    Acá se administra el contenido de todos los desplegables del sistema:
+    provincias, fueros, juzgados, etapas procesales, estados de expediente,
+    orígenes de contacto, tipos de evento, rubros de gasto, medios de pago.
+  </p>
+
+  <div class="caja">
+    <span class="rotulo">Las opciones no se borran</span>
+    <p>
+      Se <strong>desactivan</strong>. Una opción desactivada deja de ofrecerse al
+      cargar, pero los registros que ya la usaban la conservan. Si se borrara, esos
+      registros quedarían huérfanos — que es lo que pasaba al eliminar un valor de
+      una lista en la planilla.
+    </p>
+  </div>
+
+  <h3>Abogados</h3>
+  <p>
+    La ficha profesional de cada abogado: nombre, matrícula, email, teléfono. Son
+    los que aparecen como responsables de clientes, expedientes y vencimientos.
+    Un abogado puede tener o no un usuario para entrar al sistema.
+  </p>
+
+  <h3>Calendario procesal</h3>
+  <p>
+    Tres cosas, y son las que alimentan el cómputo de plazos:
+  </p>
+  <ul>
+    <li><strong>Feriados:</strong> los días inhábiles del año.</li>
+    <li><strong>Ferias judiciales:</strong> los períodos de feria.</li>
+    <li><strong>Tipos de plazo:</strong> cuántos días tiene cada plazo y si corre en días hábiles o corridos.</li>
+  </ul>
+
+  <div class="caja alerta">
+    <span class="rotulo">Revisar antes de usar</span>
+    <p>
+      Los tipos de plazo que trae el sistema cargados de fábrica son
+      <strong>orientativos</strong> y están marcados como «revisar contra el código
+      procesal aplicable». Hay que verificarlos contra la jurisdicción y el fuero en
+      los que trabaja el estudio antes de confiar en ellos. Ver el capítulo 17.
+    </p>
+  </div>
+
+  <h3>Usuarios</h3>
+  <p>
+    Solo el administrador. Se crean con email, nombre, contraseña inicial y rol, y
+    se pueden vincular a una ficha de abogado. Un usuario no se borra: se desactiva,
+    y así se conserva el rastro de todo lo que hizo.
+  </p>
+
+  <h3>Auditoría</h3>
+  <p>
+    Solo el administrador. El registro de todo lo que pasó en el sistema:
+    <strong>campo por campo</strong>, con quién lo cambió, cuándo, el valor anterior,
+    el nuevo y desde qué dirección de red. Incluye los ingresos, los intentos
+    fallidos y las descargas de archivos.
+  </p>
+  <p>
+    Es lo que la planilla no tenía y por lo que nunca se podía reconstruir quién
+    había modificado un dato.
+  </p>
+</div>
+
+<!-- ======================================================================= -->
+<!-- 14. ADJUNTOS Y EXPORTACIONES                                             -->
+<!-- ======================================================================= -->
+<div class="capitulo">
+  <h2><span class="num">CAPÍTULO 14</span>Archivos adjuntos y exportaciones</h2>
+
+  <h3>Adjuntar archivos</h3>
+  <p>
+    Se pueden adjuntar archivos a expedientes, vencimientos, clientes y gastos.
+    Los formatos aceptados son:
+  </p>
+  <p>
+    <code>.pdf</code> · <code>.doc</code> · <code>.docx</code> · <code>.odt</code> ·
+    <code>.xls</code> · <code>.xlsx</code> · <code>.txt</code> · <code>.jpg</code> ·
+    <code>.jpeg</code> · <code>.png</code>
+  </p>
+  <p>
+    El tamaño máximo por archivo es de <strong>10 MB</strong> (ajustable por el
+    administrador). Cada descarga queda registrada en la auditoría.
+  </p>
+
+  <h3>Qué se puede exportar</h3>
+  <table>
+    <thead>
+      <tr><th>Pantalla</th><th>Formato</th><th>Qué baja</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="campo">Clientes</td><td>CSV</td><td>La lista completa.</td></tr>
+      <tr><td class="campo">Expedientes</td><td>CSV</td><td>La lista completa.</td></tr>
+      <tr><td class="campo">Vencimientos</td><td>CSV</td><td>La lista, con los filtros aplicados.</td></tr>
+      <tr><td class="campo">Honorarios</td><td>CSV</td><td>La lista completa.</td></tr>
+      <tr><td class="campo">Gastos</td><td>CSV</td><td>Solo el período seleccionado.</td></tr>
+      <tr><td class="campo">Cuenta corriente</td><td>PDF</td><td>El estado de cuenta de un cliente.</td></tr>
+      <tr><td class="campo">Ficha del expediente</td><td>PDF</td><td>La ficha completa de la causa.</td></tr>
+    </tbody>
+  </table>
+
+  <p>
+    Los CSV se abren directo en Excel. Los PDF están armados para imprimir o
+    mandar por mail.
+  </p>
+</div>
+
+<!-- ======================================================================= -->
+<!-- 15. PERMISOS                                                             -->
+<!-- ======================================================================= -->
+<div class="capitulo">
+  <h2><span class="num">CAPÍTULO 15</span>Quién puede hacer qué</h2>
+  <p class="entradilla">
+    La tabla completa. Consultar (leer) está permitido a todos los roles en todo lo
+    operativo; lo que cambia es quién puede crear, editar y eliminar.
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Acción</th>
+        <th class="centro">Admin</th>
+        <th class="centro">Abogado</th>
+        <th class="centro">Secretaría</th>
+        <th class="centro">Lectura</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td class="campo">Ver clientes, causas, vencimientos</td><td class="centro si">Sí</td><td class="centro si">Sí</td><td class="centro si">Sí</td><td class="centro si">Sí</td></tr>
+      <tr><td class="campo">Cargar y editar clientes</td><td class="centro si">Sí</td><td class="centro si">Sí</td><td class="centro si">Sí</td><td class="centro no">—</td></tr>
+      <tr><td class="campo">Dar de baja clientes</td><td class="centro si">Sí</td><td class="centro si">Sí</td><td class="centro no">—</td><td class="centro no">—</td></tr>
+      <tr><td class="campo">Cargar y editar expedientes</td><td class="centro si">Sí</td><td class="centro si">Sí</td><td class="centro si">Sí</td><td class="centro no">—</td></tr>
+      <tr><td class="campo">Dar de baja expedientes</td><td class="centro si">Sí</td><td class="centro si">Sí</td><td class="centro no">—</td><td class="centro no">—</td></tr>
+      <tr><td class="campo">Cargar, editar y borrar vencimientos</td><td class="centro si">Sí</td><td class="centro si">Sí</td><td class="centro si">Sí</td><td class="centro no">—</td></tr>
+      <tr><td class="campo">Cargar y editar recurrentes</td><td class="centro si">Sí</td><td class="centro si">Sí</td><td class="centro si">Sí</td><td class="centro no">—</td></tr>
+      <tr><td class="campo">Ver honorarios</td><td class="centro si">Sí</td><td class="centro si">Sí</td><td class="centro si">Sí</td><td class="centro si">Sí</td></tr>
+      <tr><td class="campo">Pactar honorarios y registrar cobros</td><td class="centro si">Sí</td><td class="centro si">Sí</td><td class="centro no">—</td><td class="centro no">—</td></tr>
+      <tr><td class="campo">Eliminar honorarios</td><td class="centro si">Sí</td><td class="centro no">—</td><td class="centro no">—</td><td class="centro no">—</td></tr>
+      <tr><td class="campo">Cargar y editar gastos</td><td class="centro si">Sí</td><td class="centro si">Sí</td><td class="centro si">Sí</td><td class="centro no">—</td></tr>
+      <tr><td class="campo">Dar de baja gastos</td><td class="centro si">Sí</td><td class="centro si">Sí</td><td class="centro no">—</td><td class="centro no">—</td></tr>
+      <tr><td class="campo">Subir adjuntos</td><td class="centro si">Sí</td><td class="centro si">Sí</td><td class="centro si">Sí</td><td class="centro no">—</td></tr>
+      <tr><td class="campo">Borrar adjuntos</td><td class="centro si">Sí</td><td class="centro si">Sí</td><td class="centro no">—</td><td class="centro no">—</td></tr>
+      <tr><td class="campo">Editar listas y calendario procesal</td><td class="centro si">Sí</td><td class="centro si">Sí</td><td class="centro no">—</td><td class="centro no">—</td></tr>
+      <tr><td class="campo">Editar datos y parámetros del estudio</td><td class="centro si">Sí</td><td class="centro no">—</td><td class="centro no">—</td><td class="centro no">—</td></tr>
+      <tr><td class="campo">Administrar abogados</td><td class="centro si">Sí</td><td class="centro no">—</td><td class="centro no">—</td><td class="centro no">—</td></tr>
+      <tr><td class="campo">Administrar usuarios</td><td class="centro si">Sí</td><td class="centro no">—</td><td class="centro no">—</td><td class="centro no">—</td></tr>
+      <tr><td class="campo">Ver la auditoría</td><td class="centro si">Sí</td><td class="centro no">—</td><td class="centro no">—</td><td class="centro no">—</td></tr>
+    </tbody>
+  </table>
+
+  <div class="caja">
+    <span class="rotulo">Por qué secretaría ve los honorarios pero no los toca</span>
+    <p>
+      Porque necesita poder informarle el saldo a un cliente que llama por teléfono,
+      sin tener que interrumpir a un abogado. Pactar un honorario o dar por cobrada
+      una suma es otra cosa, y queda en manos de los profesionales.
+    </p>
+  </div>
+</div>
+
+<!-- ======================================================================= -->
+<!-- 16. PROBLEMAS                                                            -->
+<!-- ======================================================================= -->
+<div class="capitulo">
+  <h2><span class="num">CAPÍTULO 16</span>Cuando algo no sale</h2>
+  <p class="entradilla">
+    Los mensajes que más aparecen y qué significa cada uno.
+  </p>
+
+  <table>
+    <thead>
+      <tr><th style="width: 42%">Lo que ves</th><th>Qué pasó y qué hacer</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="campo" style="white-space: normal">«El registro fue modificado por otra persona»</td>
+        <td>Alguien más editó y guardó lo mismo mientras vos lo tenías abierto. Cerrá, volvé a abrirlo y rehacé el cambio sobre la versión nueva. El sistema prefiere avisarte antes que pisar el trabajo del otro.</td>
+      </tr>
+      <tr>
+        <td class="campo" style="white-space: normal">Un gasto de causa no se guarda</td>
+        <td>Falta el expediente. Un gasto marcado «de causa» tiene que decir de qué causa es.</td>
+      </tr>
+      <tr>
+        <td class="campo" style="white-space: normal">«Ya existe un registro con ese valor»</td>
+        <td>Estás repitiendo algo que tiene que ser único, como el email de un usuario. Revisá si el registro ya estaba cargado.</td>
+      </tr>
+      <tr>
+        <td class="campo" style="white-space: normal">«El registro está referenciado por otros datos»</td>
+        <td>Estás intentando eliminar algo que otros registros usan. Dalo de baja en vez de borrarlo.</td>
+      </tr>
+      <tr>
+        <td class="campo" style="white-space: normal">No aparece el botón que necesitás</td>
+        <td>Tu rol no tiene ese permiso. Ver el capítulo 15.</td>
+      </tr>
+      <tr>
+        <td class="campo" style="white-space: normal">No te deja entrar después de varios intentos</td>
+        <td>La cuenta se bloqueó por seguridad. Esperá unos minutos o pedile al administrador que la desbloquee.</td>
+      </tr>
+      <tr>
+        <td class="campo" style="white-space: normal">Un campo en dorado no te deja escribir</td>
+        <td>Es un campo calculado. Se cambia modificando lo que lo alimenta: el importe pactado, el IVA, los cobros.</td>
+      </tr>
+      <tr>
+        <td class="campo" style="white-space: normal">Un cliente no aparece al cargar</td>
+        <td>Puede estar dado de baja. Revisalo en Clientes quitando el filtro de estado.</td>
+      </tr>
+      <tr>
+        <td class="campo" style="white-space: normal">Una opción ya no está en el desplegable</td>
+        <td>Fue desactivada en Configuración → Listas. Los registros viejos la conservan.</td>
+      </tr>
+      <tr>
+        <td class="campo" style="white-space: normal">Los importes del tablero no cambian</td>
+        <td>Fijate el período seleccionado arriba a la derecha. Recordá que las alertas de vencimientos son siempre globales y no siguen ese filtro.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Antes de reportar un problema</h3>
+  <p>
+    Anotá qué pantalla era, qué estabas haciendo y qué decía el mensaje exacto. Con
+    eso y el registro de auditoría casi siempre se reconstruye qué pasó.
+  </p>
+</div>
+
+<!-- ======================================================================= -->
+<!-- 17. PLAZOS                                                               -->
+<!-- ======================================================================= -->
+<div class="capitulo">
+  <h2><span class="num">CAPÍTULO 17</span>Advertencia sobre el cómputo de plazos</h2>
+  <p class="entradilla">
+    Este capítulo hay que leerlo antes de usar el sistema para controlar un plazo
+    real.
+  </p>
+
+  <div class="caja alerta">
+    <span class="rotulo">Lo esencial</span>
+    <p>
+      El sistema hace la <strong>aritmética</strong> del calendario. No interpreta
+      derecho procesal. Cuántos días tiene cada plazo, desde cuándo corre y si se
+      cuenta en días hábiles o corridos cambia según jurisdicción, fuero e instancia:
+      todo eso son <strong>datos que carga el estudio</strong>, no reglas escritas en
+      el programa.
+    </p>
+  </div>
+
+  <h3>Lo que sí está implementado</h3>
+  <p>Porque es aritmética y no criterio:</p>
+  <ul>
+    <li>Sábados, domingos, feriados y ferias judiciales cargados son días inhábiles.</li>
+    <li>El plazo corre desde el día hábil <strong>siguiente</strong> al acto (regla general del CPCCN, art. 156).</li>
+    <li>Un plazo en días corridos que cae en día inhábil se traslada al hábil siguiente.</li>
+  </ul>
+
+  <h3>Lo que depende del estudio</h3>
+  <ul>
+    <li>Los <strong>tipos de plazo</strong> precargados son orientativos y están marcados para revisar contra el código procesal aplicable.</li>
+    <li>Los <strong>feriados y ferias</strong> que trae el sistema son los de Nación. Si el estudio trabaja en otra jurisdicción, hay que cargar los que correspondan.</li>
+    <li>La <strong>caducidad de instancia</strong> usa los meses configurados, por expediente o el valor general.</li>
+  </ul>
+
+  <h3>Qué significa esto en la práctica</h3>
+  <p>
+    El sistema es una <strong>ayuda de control</strong>, no un sustituto del
+    criterio profesional. Sirve para que ningún plazo se pierda de vista, no para
+    decidir cuántos días tiene. La responsabilidad de que los tipos de plazo
+    cargados sean los correctos es del estudio.
+  </p>
+
+  <p class="nota-pie">
+    Manual de uso del sistema de gestión de TAGS Group · Versión 1.0 ·
+    Documento de trabajo interno del estudio.
+  </p>
+</div>
+
+</body>
+</html>

@@ -113,12 +113,13 @@ export function Honorarios() {
       </Cabecera>
 
       {t ? (
-        <div className="grid grid-4" style={{ marginBottom: 14 }}>
-          <Stat etiqueta="Total pactado" tono="oro" valor={pesos(t.totalConIva)} pie="Honorarios con IVA" />
-          <Stat etiqueta="Total cobrado" tono="verde" valor={pesos(t.totalCobrado)} pie="Lo que ya entró" />
-          <Stat etiqueta="Saldo a cobrar" tono="vencido" valor={pesos(t.saldoACobrar)} pie="Lo que falta entrar" />
+        <div className="grid-stats" style={{ marginBottom: 14 }}>
+          <Stat etiqueta="Total pactado" icono="▤" tono="oro" valor={pesos(t.totalConIva)} pie="Honorarios con IVA" />
+          <Stat etiqueta="Total cobrado" icono="✓" tono="verde" valor={pesos(t.totalCobrado)} pie="Lo que ya entró" />
+          <Stat etiqueta="Saldo a cobrar" icono="⚑" tono="vencido" valor={pesos(t.saldoACobrar)} pie="Lo que falta entrar" />
           <Stat
             etiqueta="Cobrado en el período"
+            icono="$"
             valor={pesos(resumen.data.cobradoPeriodo)}
             pie="Según la fecha de cada cobro"
           />
@@ -534,10 +535,10 @@ function PanelCobros({ honorario, mediosPago, onCerrar }) {
 
   return (
     <Modal abierto titulo={'Cobros · ' + honorario.cliente} onCerrar={onCerrar}>
-      <div className="grid grid-3" style={{ marginBottom: 16 }}>
-        <Stat etiqueta="Total c/IVA" valor={pesos(h.totalConIva)} />
-        <Stat etiqueta="Cobrado" tono="verde" valor={pesos(h.cobrado)} />
-        <Stat etiqueta="Saldo" tono="vencido" valor={pesos(h.saldo)} />
+      <div className="grid-stats" style={{ marginBottom: 16 }}>
+        <Stat etiqueta="Total c/IVA" icono="▤" valor={pesos(h.totalConIva)} />
+        <Stat etiqueta="Cobrado" icono="✓" tono="verde" valor={pesos(h.cobrado)} />
+        <Stat etiqueta="Saldo" icono="⚑" tono="vencido" valor={pesos(h.saldo)} />
       </div>
 
       {h.saldoAFavorCliente > 0 ? (

@@ -45,17 +45,106 @@ export function Chip({ valor, clase }) {
 //  Indicadores
 // ---------------------------------------------------------------------------
 
-export function Stat({ etiqueta: label, valor, pie, tono, icono }) {
-  return (
-    <div className={'stat ' + (tono || '')}>
-      <div className="etiqueta">
-        {icono ? <span>{icono}</span> : null}
-        {label}
+/**
+ * Tarjeta de indicador.
+ *
+ * Todo lo que no sea `etiqueta` y `valor` es opcional, asi la forma corta
+ * -que es como se usa en la mayoria de las pantallas- sigue siendo una linea.
+ *
+ *   icono     glifo dentro del circulo de color. Sin icono no hay circulo.
+ *   tono      vencido | hoy | proximo | oro | verde. Pinta valor, icono,
+ *             barra y la regla superior de un solo tiro.
+ *   delta     variacion contra el periodo anterior. Numero, o el objeto
+ *             { valor, texto, invertido }. `invertido` marca los casos donde
+ *             subir es mala noticia (gastos, saldo a cobrar): el color sale
+ *             del significado, no del signo.
+ *   progreso  0-100. Dibuja la barra debajo del pie.
+ *   cargando  esqueleto, para que la tarjeta ocupe su lugar antes del dato.
+ */
+export function Stat({
+  etiqueta: label,
+  valor,
+  pie,
+  tono,
+  icono,
+  delta,
+  progreso,
+  cargando,
+}) {
+  const clase = 'stat ' + (tono || '');
+
+  if (cargando) {
+    return (
+      <div className={clase} aria-busy="true">
+        <div className="stat-cabecera">
+          <div className="stat-texto">
+            <span className="stat-hueso etiqueta" />
+            <span className="stat-hueso valor" />
+          </div>
+          {icono ? <div className="icono hueso" /> : null}
+        </div>
+        <div className="pie">
+          <span className="stat-hueso pie" />
+        </div>
       </div>
-      <div className="valor">{valor}</div>
-      {pie ? <div className="pie">{pie}</div> : null}
+    );
+  }
+
+  const d = normalizarDelta(delta);
+
+  return (
+    <div className={clase}>
+      <div className="stat-cabecera">
+        <div className="stat-texto">
+          <div className="etiqueta">{label}</div>
+          <div className="valor">{valor}</div>
+        </div>
+        {/* aria-hidden: el glifo es decorativo, la etiqueta ya nombra el dato. */}
+        {icono ? (
+          <div className="icono" aria-hidden="true">
+            {icono}
+          </div>
+        ) : null}
+      </div>
+
+      {d || pie ? (
+        <div className="pie">
+          {d ? (
+            <span className={'stat-delta ' + d.clase}>
+              <span aria-hidden="true">{d.flecha}</span>
+              {d.texto}
+            </span>
+          ) : null}
+          {pie ? <span>{pie}</span> : null}
+        </div>
+      ) : null}
+
+      {progreso == null ? null : <Progreso valor={progreso} />}
     </div>
   );
+}
+
+/**
+ * Resuelve la variacion a flecha, texto y color.
+ *
+ * El 0 se muestra como "sin cambios" y en gris: una flecha en un cambio nulo
+ * hace pensar que algo se movio.
+ */
+function normalizarDelta(delta) {
+  if (delta == null || delta === '') return null;
+  const cfg = typeof delta === 'object' ? delta : { valor: delta };
+  const n = Number(cfg.valor);
+  if (!Number.isFinite(n)) return null;
+
+  const sube = n > 0;
+  const quieto = n === 0;
+  const bueno = cfg.invertido ? !sube : sube;
+
+  return {
+    clase: quieto ? 'plano' : bueno ? 'bien' : 'mal',
+    flecha: quieto ? '=' : sube ? '↑' : '↓',
+    texto: cfg.texto || porcentaje(Math.abs(n)),
+  };
 }
 
 export function Panel({ titulo, icono, acciones, children, sinPadding }) {

@@ -550,12 +550,27 @@ a:hover {
    TARJETA DE INDICADOR
    ========================================================================== */
 
+/* Grilla propia de los indicadores.
+   A diferencia de .grid-4, no depende de breakpoints: las tarjetas se
+   reacomodan solas segun el ancho disponible, asi una fila de 3 y una de 8 se
+   ven bien sin tocar nada. El min(100%, ...) es lo que evita que en pantallas
+   muy angostas la columna quede mas ancha que la pantalla y aparezca scroll
+   horizontal. */
+.grid-stats {
+  display: grid;
+  gap: var(--e4);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 232px), 1fr));
+}
+
 .stat {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--e3);
   background: var(--superficie);
   border: 1px solid var(--linea-sutil);
   border-radius: var(--r);
-  padding: var(--e3) var(--e4) var(--e4);
+  padding: var(--e4);
   box-shadow: var(--filo), var(--sombra-1);
   overflow: hidden;
   transition: border-color var(--transicion), transform var(--transicion);
@@ -576,15 +591,27 @@ a:hover {
   transform: translateY(-1px);
 }
 
+/* Cabecera: el bloque de texto crece y el icono queda fijo a la derecha. */
+.stat-cabecera {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--e3);
+}
+
+/* min-width:0 es lo que permite que un importe largo se acomode dentro de la
+   tarjeta en vez de empujar al icono fuera de la caja. */
+.stat-texto {
+  min-width: 0;
+  flex: 1;
+}
+
 .stat .etiqueta {
   font-size: 9.5px;
   font-weight: 700;
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--texto-3);
-  display: flex;
-  align-items: center;
-  gap: 6px;
   margin-bottom: var(--e2);
 }
 
@@ -598,41 +625,196 @@ a:hover {
   overflow-wrap: anywhere;
 }
 
-.stat .pie {
-  font-size: var(--t-sm);
-  color: var(--texto-4);
-  margin-top: 5px;
+/* Icono en circulo. El tamano fijo mas flex-shrink:0 es lo que evita que se
+   deforme en un ovalo cuando el valor de al lado es largo. */
+.stat .icono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  flex-shrink: 0;
+  border-radius: 50%;
+  font-size: var(--t-lg);
+  line-height: 1;
+  background: var(--neutro-bg);
+  border: 1px solid var(--neutro-linea);
+  color: var(--texto-2);
 }
 
+/* El pie es una fila: primero la variacion, despues el texto. Envuelve en vez
+   de recortarse porque en una tarjeta angosta el texto sigue siendo util. */
+.stat .pie {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--t-sm);
+  color: var(--texto-4);
+}
+
+/* Variacion contra el periodo anterior. El color lo decide el componente, no
+   el signo: en gastos, subir es mala noticia. */
+.stat-delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.stat-delta.bien {
+  color: var(--verde);
+}
+.stat-delta.mal {
+  color: var(--rojo);
+}
+.stat-delta.plano {
+  color: var(--texto-3);
+}
+
+/* La barra hereda el ancho de la tarjeta: sin el min-width:0 el valor de
+   .progreso (50px) le pone un piso que no hace falta aca. */
+.stat .progreso {
+  min-width: 0;
+}
+
+/* --- Tonos --------------------------------------------------------------- */
 .stat.vencido::before {
   background: linear-gradient(90deg, var(--rojo), transparent 85%);
 }
 .stat.vencido .valor {
   color: var(--rojo);
 }
+.stat.vencido .icono {
+  background: var(--rojo-bg);
+  border-color: var(--rojo-linea);
+  color: var(--rojo);
+}
+.stat.vencido .progreso > div {
+  background: linear-gradient(90deg, #b8363a, var(--rojo));
+}
+
 .stat.hoy::before {
   background: linear-gradient(90deg, var(--naranja), transparent 85%);
 }
 .stat.hoy .valor {
   color: var(--naranja);
 }
+.stat.hoy .icono {
+  background: var(--naranja-bg);
+  border-color: var(--naranja-linea);
+  color: var(--naranja);
+}
+.stat.hoy .progreso > div {
+  background: linear-gradient(90deg, #b9691f, var(--naranja));
+}
+
 .stat.proximo::before {
   background: linear-gradient(90deg, var(--amarillo), transparent 85%);
 }
 .stat.proximo .valor {
   color: var(--amarillo);
 }
+.stat.proximo .icono {
+  background: var(--amarillo-bg);
+  border-color: var(--amarillo-linea);
+  color: var(--amarillo);
+}
+.stat.proximo .progreso > div {
+  background: linear-gradient(90deg, #b39a3e, var(--amarillo));
+}
+
 .stat.oro::before {
   background: linear-gradient(90deg, var(--oro), transparent 85%);
 }
 .stat.oro .valor {
   color: var(--oro-200);
 }
+.stat.oro .icono {
+  background: var(--oro-tenue-alto);
+  border-color: var(--oro-700);
+  color: var(--oro-200);
+}
+
 .stat.verde::before {
   background: linear-gradient(90deg, var(--verde), transparent 85%);
 }
 .stat.verde .valor {
   color: var(--verde);
+}
+.stat.verde .icono {
+  background: var(--verde-bg);
+  border-color: var(--verde-linea);
+  color: var(--verde);
+}
+.stat.verde .progreso > div {
+  background: linear-gradient(90deg, #2f8a63, var(--verde));
+}
+
+/* --- Esqueleto de carga --------------------------------------------------- */
+/* Se usa mientras llega el dato, para que la fila no salte de alto cuando
+   aparece: la tarjeta ya ocupa su lugar definitivo. */
+.stat-hueso {
+  display: block;
+  height: 0.7em;
+  border-radius: var(--r-xs);
+  background: linear-gradient(
+    90deg,
+    var(--superficie-alta) 25%,
+    var(--superficie-hover) 37%,
+    var(--superficie-alta) 63%
+  );
+  background-size: 400% 100%;
+  animation: hueso 1.4s ease infinite;
+}
+.stat-hueso.valor {
+  height: 1.1em;
+  width: 45%;
+}
+.stat-hueso.etiqueta {
+  width: 60%;
+  margin-bottom: var(--e2);
+}
+.stat-hueso.pie {
+  width: 75%;
+  height: 0.6em;
+}
+.stat .icono.hueso {
+  background: var(--superficie-alta);
+  border-color: var(--linea-sutil);
+}
+
+@keyframes hueso {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
+  }
+}
+
+/* Quien pidio menos animacion no necesita ver latir la pantalla. */
+@media (prefers-reduced-motion: reduce) {
+  .stat-hueso {
+    animation: none;
+  }
+  .stat:hover {
+    transform: none;
+  }
+}
+
+/* En pantallas chicas el valor baja de cuerpo: a 27px un importe en pesos con
+   separadores no entra en una tarjeta a ancho de telefono. */
+@media (max-width: 520px) {
+  .stat .valor {
+    font-size: var(--t-xl);
+  }
+  .stat .icono {
+    width: 2.25rem;
+    height: 2.25rem;
+    font-size: var(--t-md);
+  }
 }
 
 /* ==========================================================================
