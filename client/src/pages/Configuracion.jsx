@@ -14,6 +14,7 @@ import { Tabla } from '../components/Tabla.jsx';
 import { Panel, Aviso, Vacio, Cargando } from '../components/Comunes.jsx';
 import { Modal, Confirmar } from '../components/Modal.jsx';
 import { Texto, Numero, Monto, Selector, Check, opcionesDeEnum } from '../components/Campos.jsx';
+import { SelectorFecha } from '../components/SelectorFecha.jsx';
 import { useAbogados, useConfig, useGuardar, errorDe } from '../hooks/useDatos.js';
 import { fecha, etiqueta, fechaHora } from '../lib/formato.js';
 
@@ -594,14 +595,14 @@ function CalendarioProcesal() {
               style={{ padding: '12px 14px 0', marginBottom: 0 }}
               onSubmit={(e) => {
                 e.preventDefault();
+                if (!nuevoFeriado.fecha || !nuevoFeriado.descripcion) return;
                 crearFeriado.mutate(nuevoFeriado);
               }}
             >
-              <input
-                type="date"
-                value={nuevoFeriado.fecha}
-                onChange={(e) => setNuevoFeriado((f) => ({ ...f, fecha: e.target.value }))}
-                required
+              <SelectorFecha
+                valor={nuevoFeriado.fecha}
+                onChange={(v) => setNuevoFeriado((f) => ({ ...f, fecha: v || '' }))}
+                obligatorio
               />
               <input
                 type="text"

@@ -7,6 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import { get } from '../lib/api.js';
 import { Cabecera } from '../components/Cabecera.jsx';
 import { Panel, Cargando, ErrorCarga, Aviso } from '../components/Comunes.jsx';
+import { SelectorFecha } from '../components/SelectorFecha.jsx';
 import { useAbogados } from '../hooks/useDatos.js';
 import { hoyISO, lunesDe, sumarDias, fecha } from '../lib/formato.js';
 
@@ -54,11 +55,11 @@ export function Agenda() {
       <div className="filtros">
         <label className="fila chico gris" style={{ gap: 6 }}>
           Desde
-          <input type="date" value={desde} onChange={(e) => setDesde(e.target.value)} />
+          <SelectorFecha valor={desde} onChange={(v) => setDesde(v)} />
         </label>
         <label className="fila chico gris" style={{ gap: 6 }}>
           hasta
-          <input type="date" value={hasta} onChange={(e) => setHasta(e.target.value)} />
+          <SelectorFecha valor={hasta} onChange={(v) => setHasta(v)} />
         </label>
         <select value={responsableId} onChange={(e) => setResponsableId(e.target.value)}>
           <option value="">Todos los responsables</option>

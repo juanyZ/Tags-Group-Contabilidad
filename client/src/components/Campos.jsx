@@ -10,6 +10,8 @@
  * backend debajo del campo correspondiente.
  */
 
+import { SelectorFecha } from './SelectorFecha.jsx';
+
 function Envoltura({ label, obligatorio, error, ayuda, calculado, ancho, children }) {
   return (
     <div
@@ -56,15 +58,14 @@ export function AreaTexto({ label, valor, onChange, error, ayuda, ancho, filas, 
   );
 }
 
-/** Fecha en formato ISO (lo que espera la API). El navegador la muestra local. */
-export function Fecha({ label, valor, onChange, error, ayuda, obligatorio, ancho, ...resto }) {
+/** Fecha en formato ISO (lo que espera la API). */
+export function Fecha({ label, valor, onChange, error, ayuda, obligatorio, ancho }) {
   return (
     <Envoltura label={label} obligatorio={obligatorio} error={error} ayuda={ayuda} ancho={ancho}>
-      <input
-        type="date"
-        value={valor ? String(valor).slice(0, 10) : ''}
-        onChange={(e) => onChange(e.target.value || null)}
-        {...resto}
+      <SelectorFecha
+        valor={valor ? String(valor).slice(0, 10) : ''}
+        onChange={onChange}
+        obligatorio={obligatorio}
       />
     </Envoltura>
   );

@@ -13,6 +13,7 @@ import { Tabla, Paginacion, useTabla } from '../components/Tabla.jsx';
 import { Panel, Aviso, Vacio, SemaforoConDias, Chip } from '../components/Comunes.jsx';
 import { Modal, Confirmar } from '../components/Modal.jsx';
 import { Texto, Fecha, Hora, Selector, AreaTexto, Calculado, opcionesDeEnum } from '../components/Campos.jsx';
+import { SelectorFecha } from '../components/SelectorFecha.jsx';
 import {
   useOpcionesCatalogo,
   useAbogados,
@@ -165,17 +166,15 @@ export function Puntuales() {
             </option>
           ))}
         </select>
-        <input
-          type="date"
-          value={filtros.desde}
-          onChange={(e) => cambiarFiltro('desde', e.target.value)}
-          title="Desde"
+        <SelectorFecha
+          valor={filtros.desde}
+          onChange={(v) => cambiarFiltro('desde', v || '')}
+          placeholder="Desde"
         />
-        <input
-          type="date"
-          value={filtros.hasta}
-          onChange={(e) => cambiarFiltro('hasta', e.target.value)}
-          title="Hasta"
+        <SelectorFecha
+          valor={filtros.hasta}
+          onChange={(v) => cambiarFiltro('hasta', v || '')}
+          placeholder="Hasta"
         />
       </div>
 

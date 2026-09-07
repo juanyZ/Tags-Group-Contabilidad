@@ -1508,8 +1508,220 @@ label.fila {
     flex: 1 1 100%;
   }
   .filtros select,
-  .filtros input:not([type='search']):not([type='checkbox']) {
+  .filtros input:not([type='search']):not([type='checkbox']),
+  .filtros .selector-fecha {
     flex: 1 1 150px;
+  }
+}
+
+/* --- Selector de fecha -------------------------------------------------
+   Calendario propio en reemplazo del <input type="date"> nativo: mismo
+   contrato (value/onChange en ISO) pero con una grilla consistente entre
+   navegadores y alineada al resto de los campos. El boton que lo abre se
+   ve igual que un input; el panel es un desplegable posicionado debajo,
+   que en pantallas chicas se recentra para no salirse de la pantalla. */
+.selector-fecha {
+  position: relative;
+  width: 100%;
+}
+
+.filtros .selector-fecha {
+  width: auto;
+  min-width: min(150px, 100%);
+}
+
+.selector-fecha-boton {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--linea);
+  border-radius: var(--r-sm);
+  color: var(--texto);
+  padding: 8px 11px;
+  font-size: var(--t-base);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color var(--transicion), background var(--transicion),
+    box-shadow var(--transicion);
+}
+
+.filtros .selector-fecha-boton {
+  padding: 6px 10px;
+  font-size: var(--t-sm);
+}
+
+.selector-fecha-boton:hover:not(:disabled) {
+  border-color: var(--linea-fuerte);
+}
+
+.selector-fecha-boton:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.selector-fecha.abierto .selector-fecha-boton {
+  outline: none;
+  border-color: var(--oro);
+  background: rgba(0, 0, 0, 0.35);
+  box-shadow: var(--brillo-oro);
+}
+
+.selector-fecha-boton .vacio {
+  color: var(--texto-4);
+}
+
+.selector-fecha-icono {
+  flex: none;
+  font-size: 12px;
+  opacity: 0.75;
+}
+
+.selector-fecha-panel {
+  position: absolute;
+  z-index: 60;
+  top: calc(100% + 6px);
+  left: 0;
+  width: 272px;
+  max-width: calc(100vw - 24px);
+  background: var(--superficie-alta);
+  border: 1px solid var(--linea);
+  border-radius: var(--r);
+  box-shadow: var(--filo), var(--sombra-3);
+  padding: var(--e3);
+  animation: emerger 140ms cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+.selector-fecha-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--e2);
+}
+
+.selector-fecha-cabecera strong {
+  font-size: var(--t-base);
+  font-weight: 700;
+  color: var(--texto);
+  text-transform: capitalize;
+}
+
+.selector-fecha-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid var(--linea);
+  background: transparent;
+  color: var(--texto-2);
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color var(--transicion), background var(--transicion),
+    color var(--transicion);
+}
+
+.selector-fecha-nav:hover {
+  border-color: var(--oro);
+  color: var(--oro-200);
+  background: var(--oro-tenue);
+}
+
+.selector-fecha-grilla {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.selector-fecha-dia-nombre {
+  text-align: center;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--texto-4);
+  padding-bottom: 4px;
+}
+
+.selector-fecha-celda {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--texto-2);
+  font-size: var(--t-sm);
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition: background var(--transicion), color var(--transicion);
+}
+
+.selector-fecha-celda:hover {
+  background: var(--superficie-hover);
+  color: var(--texto);
+}
+
+.selector-fecha-celda.fuera-de-mes {
+  color: var(--texto-4);
+  opacity: 0.55;
+}
+
+.selector-fecha-celda.es-hoy {
+  box-shadow: inset 0 0 0 1px var(--oro-600);
+  color: var(--oro-200);
+  font-weight: 700;
+}
+
+.selector-fecha-celda.seleccionado,
+.selector-fecha-celda.seleccionado:hover {
+  background: var(--oro);
+  color: #1a1305;
+  font-weight: 700;
+}
+
+.selector-fecha-pie {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--e2);
+  margin-top: var(--e2);
+  padding-top: var(--e2);
+  border-top: 1px solid var(--linea-sutil);
+}
+
+.selector-fecha-accion {
+  border: none;
+  background: transparent;
+  color: var(--oro-300);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 2px 4px;
+}
+
+.selector-fecha-accion:hover {
+  color: var(--oro-100);
+  text-decoration: underline;
+}
+
+/* En mobile el panel se centra en la pantalla en vez de anclarse al campo:
+   un campo cerca del borde (habitual en una fila de filtros angosta) haria
+   que un panel anclado a la izquierda se salga de la pantalla. */
+@media (max-width: 480px) {
+  .selector-fecha-panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(300px, calc(100vw - 32px));
   }
 }
 
