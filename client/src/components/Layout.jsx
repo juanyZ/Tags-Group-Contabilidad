@@ -86,6 +86,7 @@ export function Layout() {
   const navegar = useNavigate();
 
   const [menuAbierto, setMenuAbierto] = useState(false);
+  const [navAbierto, setNavAbierto] = useState(false);
   const [cambiandoPass, setCambiandoPass] = useState(false);
 
   const config = useQuery({
@@ -113,7 +114,11 @@ export function Layout() {
 
   return (
     <div className="app">
-      <aside className="sidebar">
+      {navAbierto ? (
+        <div className="sidebar-fondo" onClick={() => setNavAbierto(false)} />
+      ) : null}
+
+      <aside className={'sidebar' + (navAbierto ? ' abierto' : '')}>
         <div className="sidebar-marca">
           <div className="logo">{nombreEstudio}</div>
           <div className="bajada">Estudio jurídico integral</div>
@@ -133,6 +138,7 @@ export function Layout() {
                     key={s.a}
                     to={s.a}
                     end={s.exacto}
+                    onClick={() => setNavAbierto(false)}
                     className={({ isActive }) => 'nav-item' + (isActive ? ' activo' : '')}
                   >
                     <span className="icono">{s.icono}</span>
@@ -190,6 +196,19 @@ export function Layout() {
       </aside>
 
       <main className="contenido">
+        <header className="topbar-movil">
+          <button
+            type="button"
+            className="menu-movil-btn"
+            onClick={() => setNavAbierto(true)}
+            aria-label="Abrir menú"
+            aria-expanded={navAbierto}
+          >
+            ☰
+          </button>
+          <span className="topbar-movil-marca">{nombreEstudio}</span>
+        </header>
+
         <Outlet />
       </main>
 

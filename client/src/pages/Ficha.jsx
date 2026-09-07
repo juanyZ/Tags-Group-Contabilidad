@@ -47,7 +47,11 @@ export function Ficha() {
         titulo="Ficha del expediente"
         subtitulo="Estado procesal, importes e historial completo de movimientos de la causa"
       >
-        <select value={elegido || ''} onChange={(e) => cambiar(e.target.value)} style={{ minWidth: 380 }}>
+        <select
+          value={elegido || ''}
+          onChange={(e) => cambiar(e.target.value)}
+          style={{ minWidth: 'min(380px, 100%)' }}
+        >
           <option value="">— Elegí un expediente —</option>
           {(expedientes.data || []).map((e) => (
             <option key={e.id} value={e.id}>
