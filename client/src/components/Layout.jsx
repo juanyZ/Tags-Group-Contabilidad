@@ -126,33 +126,37 @@ export function Layout() {
         </div>
 
         <nav>
-          {GRUPOS.map((grupo) => {
-            const visibles = grupo.items.filter((i) => !i.permiso || puede(i.permiso));
-            if (visibles.length === 0) return null;
+          {(() => {
+            let indice = 0;
+            return GRUPOS.map((grupo) => {
+              const visibles = grupo.items.filter((i) => !i.permiso || puede(i.permiso));
+              if (visibles.length === 0) return null;
 
-            return (
-              <div key={grupo.titulo}>
-                <div className="sidebar-seccion">{grupo.titulo}</div>
-                {visibles.map((s) => (
-                  <NavLink
-                    key={s.a}
-                    to={s.a}
-                    end={s.exacto}
-                    onClick={() => setNavAbierto(false)}
-                    className={({ isActive }) => 'nav-item' + (isActive ? ' activo' : '')}
-                  >
-                    <span className="icono">{s.icono}</span>
-                    <span>{s.texto}</span>
-                    {s.a === '/puntuales' && vencidos > 0 ? (
-                      <span className="nav-badge" title={vencidos + ' vencimiento(s) atrasado(s)'}>
-                        {vencidos}
-                      </span>
-                    ) : null}
-                  </NavLink>
-                ))}
-              </div>
-            );
-          })}
+              return (
+                <div key={grupo.titulo}>
+                  <div className="sidebar-seccion">{grupo.titulo}</div>
+                  {visibles.map((s) => (
+                    <NavLink
+                      key={s.a}
+                      to={s.a}
+                      end={s.exacto}
+                      onClick={() => setNavAbierto(false)}
+                      className={({ isActive }) => 'nav-item' + (isActive ? ' activo' : '')}
+                      style={{ '--i': indice++ }}
+                    >
+                      <span className="icono">{s.icono}</span>
+                      <span className="nav-item-etiqueta">{s.texto}</span>
+                      {s.a === '/puntuales' && vencidos > 0 ? (
+                        <span className="nav-badge" title={vencidos + ' vencimiento(s) atrasado(s)'}>
+                          {vencidos}
+                        </span>
+                      ) : null}
+                    </NavLink>
+                  ))}
+                </div>
+              );
+            });
+          })()}
         </nav>
 
         <div className="sidebar-usuario">
@@ -167,6 +171,7 @@ export function Layout() {
               <span className="nombre">{usuario ? usuario.nombre : ''}</span>
               <span className="rol">{usuario ? ETIQUETA_ROL[usuario.rol] || usuario.rol : ''}</span>
             </span>
+            <span className="chevron" aria-hidden="true">▾</span>
           </button>
 
           {menuAbierto ? (

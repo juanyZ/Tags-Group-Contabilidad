@@ -384,6 +384,19 @@ a:hover {
   font-size: var(--t-base);
   position: relative;
   transition: background var(--transicion), color var(--transicion);
+  /* Entrada escalonada al montar la barra: cada item espera un poco más que
+     el anterior (--i lo fija el Layout), así la lista "cae en cascada" en
+     vez de aparecer toda de golpe. Con la barra siempre montada, esto corre
+     una sola vez al abrir la app, nunca al cambiar de pantalla. */
+  animation: aparecer-item 320ms cubic-bezier(0.2, 0.9, 0.3, 1) both;
+  animation-delay: calc(var(--i, 0) * 26ms);
+}
+
+@keyframes aparecer-item {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
 }
 
 /* La barra activa se dibuja con ::before y se escala: así la transición se
@@ -417,15 +430,40 @@ a:hover {
 }
 
 .nav-item .icono {
-  width: 18px;
-  text-align: center;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-sm);
   font-size: var(--t-base);
   opacity: 0.75;
   flex: none;
+  transition: background var(--transicion), transform var(--transicion),
+    opacity var(--transicion);
+}
+
+.nav-item:hover .icono {
+  transform: translateY(-1px);
 }
 
 .nav-item.activo .icono {
   opacity: 1;
+  background: var(--oro-tenue-alto);
+  animation: activar-icono 260ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes activar-icono {
+  from {
+    transform: scale(0.7);
+  }
+}
+
+.nav-item-etiqueta {
+  transition: transform var(--transicion);
+}
+
+.nav-item:hover .nav-item-etiqueta {
+  transform: translateX(1px);
 }
 
 .nav-badge {
@@ -439,6 +477,15 @@ a:hover {
   padding: 1px 6px;
   border-radius: 10px;
   box-shadow: 0 0 0 3px rgba(242, 85, 90, 0.14);
+  /* Respiración lenta y sutil: es lo único en la barra que "vive" solo, a
+     propósito, porque es la única cifra que importa ver apenas se entra. */
+  animation: pulso-alerta 2.4s ease-in-out infinite;
+}
+
+@keyframes pulso-alerta {
+  50% {
+    box-shadow: 0 0 0 5px rgba(242, 85, 90, 0.22);
+  }
 }
 
 /* Bloque de usuario, al pie de la barra */
@@ -503,6 +550,19 @@ a:hover {
   color: var(--texto-4);
   text-transform: uppercase;
   letter-spacing: 0.1em;
+}
+
+.usuario-tarjeta .chevron {
+  margin-left: auto;
+  flex: none;
+  font-size: 10px;
+  color: var(--texto-4);
+  transition: transform var(--transicion), color var(--transicion);
+}
+
+.usuario-tarjeta[aria-expanded='true'] .chevron {
+  transform: rotate(180deg);
+  color: var(--oro-200);
 }
 
 .menu-usuario {
