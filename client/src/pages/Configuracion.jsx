@@ -255,7 +255,11 @@ function Listas() {
       </Aviso>
 
       <div className="filtros">
-        <select value={tipo} onChange={(e) => setTipo(e.target.value)} style={{ minWidth: 240 }}>
+        <select
+          value={tipo}
+          onChange={(e) => setTipo(e.target.value)}
+          style={{ minWidth: 'min(240px, 100%)' }}
+        >
           {TIPOS_CATALOGO.map(([valor, texto]) => (
             <option key={valor} value={valor}>
               {texto}
@@ -283,7 +287,7 @@ function Listas() {
               placeholder="Agregar una opción nueva..."
               value={nuevo}
               onChange={(e) => setNuevo(e.target.value)}
-              style={{ minWidth: 260 }}
+              style={{ minWidth: 'min(260px, 100%)' }}
               required
             />
             {tipo === 'RUBRO_GASTO' ? (
