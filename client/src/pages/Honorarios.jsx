@@ -15,7 +15,16 @@ import { Cabecera, SelectorPeriodo } from '../components/Cabecera.jsx';
 import { Tabla, Paginacion, useTabla } from '../components/Tabla.jsx';
 import { Panel, Stat, Aviso, Vacio, Progreso, Importe, Semaforo } from '../components/Comunes.jsx';
 import { Modal, Confirmar } from '../components/Modal.jsx';
-import { Fecha, Selector, AreaTexto, Monto, Calculado, Texto, opcionesDeEnum } from '../components/Campos.jsx';
+import {
+  Fecha,
+  Selector,
+  SelectorFlotante,
+  AreaTexto,
+  Monto,
+  Calculado,
+  Texto,
+  opcionesDeEnum,
+} from '../components/Campos.jsx';
 import {
   useOpcionesCatalogo,
   useClientesOpciones,
@@ -133,28 +142,28 @@ export function Honorarios() {
           value={tabla.q}
           onChange={(e) => tabla.setBusqueda(e.target.value)}
         />
-        <select value={filtros.clienteId} onChange={(e) => cambiarFiltro('clienteId', e.target.value)}>
+        <SelectorFlotante label="Cliente" value={filtros.clienteId} onChange={(e) => cambiarFiltro('clienteId', e.target.value)}>
           <option value="">Todos los clientes</option>
           {opcionesClientes.map((c) => (
             <option key={c.valor} value={c.valor}>
               {c.texto}
             </option>
           ))}
-        </select>
-        <select value={filtros.situacion} onChange={(e) => cambiarFiltro('situacion', e.target.value)}>
+        </SelectorFlotante>
+        <SelectorFlotante label="Situación" value={filtros.situacion} onChange={(e) => cambiarFiltro('situacion', e.target.value)}>
           <option value="">Toda situación</option>
           <option value="COBRADO">Cobrado</option>
           <option value="PARCIAL">Parcial</option>
           <option value="SIN_COBRAR">Sin cobrar</option>
-        </select>
-        <select value={filtros.tipoPacto} onChange={(e) => cambiarFiltro('tipoPacto', e.target.value)}>
+        </SelectorFlotante>
+        <SelectorFlotante label="Pacto" value={filtros.tipoPacto} onChange={(e) => cambiarFiltro('tipoPacto', e.target.value)}>
           <option value="">Todo tipo de pacto</option>
           {TIPOS_PACTO.map((p) => (
             <option key={p} value={p}>
               {etiqueta(p)}
             </option>
           ))}
-        </select>
+        </SelectorFlotante>
       </div>
 
       <div className="grid-principal">

@@ -14,7 +14,7 @@ import { Cabecera } from '../components/Cabecera.jsx';
 import { Tabla, Paginacion, useTabla } from '../components/Tabla.jsx';
 import { Panel, Chip, Aviso, Vacio } from '../components/Comunes.jsx';
 import { Modal, Confirmar } from '../components/Modal.jsx';
-import { Texto, Fecha, Selector, AreaTexto, opcionesDeEnum } from '../components/Campos.jsx';
+import { Texto, Fecha, Selector, SelectorFlotante, AreaTexto, opcionesDeEnum } from '../components/Campos.jsx';
 import { useOpcionesCatalogo, useAbogados, useGuardar, errorDe } from '../hooks/useDatos.js';
 import { fecha, etiqueta, hoyISO } from '../lib/formato.js';
 
@@ -105,23 +105,25 @@ export function Clientes() {
           value={tabla.q}
           onChange={(e) => tabla.setBusqueda(e.target.value)}
         />
-        <select value={filtros.estado} onChange={(e) => cambiarFiltro('estado', e.target.value)}>
+        <SelectorFlotante label="Estado" value={filtros.estado} onChange={(e) => cambiarFiltro('estado', e.target.value)}>
           <option value="">Todos los estados</option>
           {ESTADOS.map((s) => (
             <option key={s} value={s}>
               {etiqueta(s)}
             </option>
           ))}
-        </select>
-        <select
+        </SelectorFlotante>
+        <SelectorFlotante
+          label="Tipo de persona"
           value={filtros.tipoPersona}
           onChange={(e) => cambiarFiltro('tipoPersona', e.target.value)}
         >
           <option value="">Física y jurídica</option>
           <option value="FISICA">Persona física</option>
           <option value="JURIDICA">Persona jurídica</option>
-        </select>
-        <select
+        </SelectorFlotante>
+        <SelectorFlotante
+          label="Responsable"
           value={filtros.abogadoId}
           onChange={(e) => cambiarFiltro('abogadoId', e.target.value)}
         >
@@ -131,7 +133,7 @@ export function Clientes() {
               {a.texto}
             </option>
           ))}
-        </select>
+        </SelectorFlotante>
       </div>
 
       <Panel sinPadding>

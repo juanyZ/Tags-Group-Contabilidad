@@ -14,7 +14,7 @@ import { Cabecera } from '../components/Cabecera.jsx';
 import { Tabla, Paginacion, useTabla } from '../components/Tabla.jsx';
 import { Panel, Aviso, Vacio, SemaforoConDias, Importe } from '../components/Comunes.jsx';
 import { Modal, Confirmar } from '../components/Modal.jsx';
-import { Texto, Fecha, Selector, AreaTexto, Monto, Numero, opcionesDeEnum } from '../components/Campos.jsx';
+import { Texto, Fecha, Selector, SelectorFlotante, AreaTexto, Monto, Numero, opcionesDeEnum } from '../components/Campos.jsx';
 import {
   useOpcionesCatalogo,
   useAbogados,
@@ -125,38 +125,38 @@ export function Expedientes() {
           value={tabla.q}
           onChange={(e) => tabla.setBusqueda(e.target.value)}
         />
-        <select value={filtros.clienteId} onChange={(e) => cambiarFiltro('clienteId', e.target.value)}>
+        <SelectorFlotante label="Cliente" value={filtros.clienteId} onChange={(e) => cambiarFiltro('clienteId', e.target.value)}>
           <option value="">Todos los clientes</option>
           {opcionesClientes.map((c) => (
             <option key={c.valor} value={c.valor}>
               {c.texto}
             </option>
           ))}
-        </select>
-        <select value={filtros.fueroId} onChange={(e) => cambiarFiltro('fueroId', e.target.value)}>
+        </SelectorFlotante>
+        <SelectorFlotante label="Fuero" value={filtros.fueroId} onChange={(e) => cambiarFiltro('fueroId', e.target.value)}>
           <option value="">Todos los fueros</option>
           {fueros.map((f) => (
             <option key={f.valor} value={f.valor}>
               {f.texto}
             </option>
           ))}
-        </select>
-        <select value={filtros.estadoId} onChange={(e) => cambiarFiltro('estadoId', e.target.value)}>
+        </SelectorFlotante>
+        <SelectorFlotante label="Estado" value={filtros.estadoId} onChange={(e) => cambiarFiltro('estadoId', e.target.value)}>
           <option value="">Todos los estados</option>
           {estados.map((s) => (
             <option key={s.valor} value={s.valor}>
               {s.texto}
             </option>
           ))}
-        </select>
-        <select value={filtros.abogadoId} onChange={(e) => cambiarFiltro('abogadoId', e.target.value)}>
+        </SelectorFlotante>
+        <SelectorFlotante label="Abogado" value={filtros.abogadoId} onChange={(e) => cambiarFiltro('abogadoId', e.target.value)}>
           <option value="">Todos los abogados</option>
           {opcionesAbogados.map((a) => (
             <option key={a.valor} value={a.valor}>
               {a.texto}
             </option>
           ))}
-        </select>
+        </SelectorFlotante>
         <label className="fila chico" style={{ gap: 6, cursor: 'pointer' }}>
           <input
             type="checkbox"

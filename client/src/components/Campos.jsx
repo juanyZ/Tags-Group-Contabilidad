@@ -10,6 +10,7 @@
  * backend debajo del campo correspondiente.
  */
 
+import { useId } from 'react';
 import { SelectorFecha } from './SelectorFecha.jsx';
 
 function Envoltura({ label, obligatorio, error, ayuda, calculado, ancho, children }) {
@@ -110,7 +111,30 @@ export function Numero({ label, valor, onChange, error, ayuda, min, max }) {
 }
 
 /**
- * Desplegable.
+ * Desplegable "suelto": el label vive siempre montado sobre el borde
+ * superior del control (como un FormControl+InputLabel), en vez de arriba
+ * o ausente. Pensado para selects fuera de un formulario de modal — filtros
+ * de listados, cabeceras de pantalla, navegacion — donde las opciones se
+ * pasan como children (<option>) igual que un <select> nativo.
+ */
+export function SelectorFlotante({ id, label, className, chico, style, children, ...resto }) {
+  const autoId = useId();
+  const selectId = id || autoId;
+  return (
+    <div
+      className={'selector-material' + (chico ? ' chico' : '') + (className ? ' ' + className : '')}
+      style={style}
+    >
+      <select id={selectId} {...resto}>
+        {children}
+      </select>
+      {label ? <label htmlFor={selectId}>{label}</label> : null}
+    </div>
+  );
+}
+
+/**
+ * Desplegable de formulario (modales de alta/edicion).
  * @param opciones  [{ valor, texto }] o [{ id, nombre }] segun `claveValor`
  */
 export function Selector({
@@ -126,8 +150,17 @@ export function Selector({
   numerico,
 }) {
   return (
-    <Envoltura label={label} obligatorio={obligatorio} error={error} ayuda={ayuda} ancho={ancho}>
-      <select
+    <div className={'campo' + (error ? ' con-error' : '') + (ancho ? ' ancho-total' : '')}>
+      <SelectorFlotante
+        label={
+          label ? (
+            <>
+              {label}
+              {obligatorio ? <span className="obligatorio">*</span> : null}
+            </>
+          ) : null
+        }
+        className={error ? 'con-error' : ''}
         value={valor == null ? '' : String(valor)}
         onChange={(e) => {
           const v = e.target.value;
@@ -141,8 +174,10 @@ export function Selector({
             {o.texto}
           </option>
         ))}
-      </select>
-    </Envoltura>
+      </SelectorFlotante>
+      {error ? <span className="error-campo">{error}</span> : null}
+      {!error && ayuda ? <span className="ayuda">{ayuda}</span> : null}
+    </div>
   );
 }
 

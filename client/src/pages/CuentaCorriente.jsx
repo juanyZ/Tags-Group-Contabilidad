@@ -14,6 +14,7 @@ import { get, descargar } from '../lib/api.js';
 import { Cabecera } from '../components/Cabecera.jsx';
 import { Tabla } from '../components/Tabla.jsx';
 import { Panel, Stat, Vacio, Cargando, ErrorCarga, Importe, Semaforo, Progreso } from '../components/Comunes.jsx';
+import { SelectorFlotante } from '../components/Campos.jsx';
 import { useClientesOpciones } from '../hooks/useDatos.js';
 import { fecha, etiqueta, pesos } from '../lib/formato.js';
 
@@ -39,7 +40,8 @@ export function CuentaCorriente() {
         titulo="Cuenta corriente"
         subtitulo="Lo facturado, lo que puso el estudio y lo que el cliente pagó"
       >
-        <select
+        <SelectorFlotante
+          label="Cliente"
           value={elegido || ''}
           onChange={(e) => cambiarCliente(e.target.value)}
           style={{ minWidth: 'min(300px, 100%)' }}
@@ -50,7 +52,7 @@ export function CuentaCorriente() {
               {c.nombre} ({c.codigo})
             </option>
           ))}
-        </select>
+        </SelectorFlotante>
         {elegido ? (
           <button
             type="button"

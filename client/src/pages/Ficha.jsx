@@ -23,6 +23,7 @@ import {
   Aviso,
 } from '../components/Comunes.jsx';
 import { useExpedientesOpciones } from '../hooks/useDatos.js';
+import { SelectorFlotante } from '../components/Campos.jsx';
 import { fecha, etiqueta, pesos } from '../lib/formato.js';
 
 export function Ficha() {
@@ -47,7 +48,8 @@ export function Ficha() {
         titulo="Ficha del expediente"
         subtitulo="Estado procesal, importes e historial completo de movimientos de la causa"
       >
-        <select
+        <SelectorFlotante
+          label="Expediente"
           value={elegido || ''}
           onChange={(e) => cambiar(e.target.value)}
           style={{ minWidth: 'min(380px, 100%)' }}
@@ -58,7 +60,7 @@ export function Ficha() {
               {e.codigo} · {e.caratula}
             </option>
           ))}
-        </select>
+        </SelectorFlotante>
         {elegido ? (
           <button
             type="button"

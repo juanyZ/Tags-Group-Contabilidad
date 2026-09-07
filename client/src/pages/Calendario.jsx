@@ -10,6 +10,7 @@ import { Cabecera } from '../components/Cabecera.jsx';
 import { Tabla } from '../components/Tabla.jsx';
 import { Panel, Vacio, SemaforoConDias, Cargando, ErrorCarga } from '../components/Comunes.jsx';
 import { useAbogados } from '../hooks/useDatos.js';
+import { SelectorFlotante } from '../components/Campos.jsx';
 import { fecha, MESES } from '../lib/formato.js';
 
 const DIAS_SEMANA = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
@@ -71,14 +72,14 @@ export function Calendario() {
         titulo="Calendario de vencimientos"
         subtitulo="Puntuales y recurrentes unificados: lo más urgente arriba, lo cumplido al fondo"
       >
-        <select value={responsableId} onChange={(e) => setResponsableId(e.target.value)}>
+        <SelectorFlotante label="Responsable" value={responsableId} onChange={(e) => setResponsableId(e.target.value)}>
           <option value="">Todos los responsables</option>
           {(abogados.data || []).map((a) => (
             <option key={a.id} value={a.id}>
               {a.nombre}
             </option>
           ))}
-        </select>
+        </SelectorFlotante>
       </Cabecera>
 
       <div className="grid grid-calendario">
@@ -165,28 +166,20 @@ export function Calendario() {
               <button type="button" className="btn btn-sutil btn-chico" onClick={() => moverMes(-1)}>
                 ‹
               </button>
-              <select
-                value={mes}
-                onChange={(e) => setMes(Number(e.target.value))}
-                style={{ padding: '2px 6px', fontSize: 12 }}
-              >
+              <SelectorFlotante label="Mes" chico value={mes} onChange={(e) => setMes(Number(e.target.value))}>
                 {MESES.map((m, i) => (
                   <option key={m} value={i + 1}>
                     {m}
                   </option>
                 ))}
-              </select>
-              <select
-                value={anio}
-                onChange={(e) => setAnio(Number(e.target.value))}
-                style={{ padding: '2px 6px', fontSize: 12 }}
-              >
+              </SelectorFlotante>
+              <SelectorFlotante label="Año" chico value={anio} onChange={(e) => setAnio(Number(e.target.value))}>
                 {[anio - 2, anio - 1, anio, anio + 1, anio + 2].map((a) => (
                   <option key={a} value={a}>
                     {a}
                   </option>
                 ))}
-              </select>
+              </SelectorFlotante>
               <button type="button" className="btn btn-sutil btn-chico" onClick={() => moverMes(1)}>
                 ›
               </button>

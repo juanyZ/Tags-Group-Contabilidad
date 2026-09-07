@@ -4,6 +4,7 @@
  */
 import { useUI } from '../store/ui.js';
 import { MESES } from '../lib/formato.js';
+import { SelectorFlotante } from './Campos.jsx';
 
 export function Cabecera({ titulo, subtitulo, children }) {
   return (
@@ -33,11 +34,11 @@ export function SelectorPeriodo() {
   return (
     <div className="fila" style={{ gap: 6 }}>
       <span className="chico gris nowrap">Período</span>
-      <select
+      <SelectorFlotante
+        label="Mes"
         value={mes}
         onChange={(e) => setPeriodo(anio, Number(e.target.value))}
         style={{ minWidth: 130 }}
-        aria-label="Mes del período"
       >
         <option value={0}>Todo el año</option>
         {MESES.map((m, i) => (
@@ -45,19 +46,19 @@ export function SelectorPeriodo() {
             {m}
           </option>
         ))}
-      </select>
-      <select
+      </SelectorFlotante>
+      <SelectorFlotante
+        label="Año"
         value={anio}
         onChange={(e) => setPeriodo(Number(e.target.value), mes)}
         style={{ minWidth: 90 }}
-        aria-label="Año del período"
       >
         {anios.map((a) => (
           <option key={a} value={a}>
             {a}
           </option>
         ))}
-      </select>
+      </SelectorFlotante>
     </div>
   );
 }

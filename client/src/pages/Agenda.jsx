@@ -9,6 +9,7 @@ import { Cabecera } from '../components/Cabecera.jsx';
 import { Panel, Cargando, ErrorCarga, Aviso } from '../components/Comunes.jsx';
 import { SelectorFecha } from '../components/SelectorFecha.jsx';
 import { useAbogados } from '../hooks/useDatos.js';
+import { SelectorFlotante } from '../components/Campos.jsx';
 import { hoyISO, lunesDe, sumarDias, fecha } from '../lib/formato.js';
 
 export function Agenda() {
@@ -61,14 +62,14 @@ export function Agenda() {
           hasta
           <SelectorFecha valor={hasta} onChange={(v) => setHasta(v)} />
         </label>
-        <select value={responsableId} onChange={(e) => setResponsableId(e.target.value)}>
+        <SelectorFlotante label="Responsable" value={responsableId} onChange={(e) => setResponsableId(e.target.value)}>
           <option value="">Todos los responsables</option>
           {(abogados.data || []).map((a) => (
             <option key={a.id} value={a.id}>
               {a.nombre}
             </option>
           ))}
-        </select>
+        </SelectorFlotante>
       </div>
 
       {consulta.isLoading ? <Cargando /> : null}

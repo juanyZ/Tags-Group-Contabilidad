@@ -12,7 +12,16 @@ import { Cabecera } from '../components/Cabecera.jsx';
 import { Tabla, Paginacion, useTabla } from '../components/Tabla.jsx';
 import { Panel, Aviso, Vacio, SemaforoConDias, Chip } from '../components/Comunes.jsx';
 import { Modal, Confirmar } from '../components/Modal.jsx';
-import { Texto, Fecha, Hora, Selector, AreaTexto, Calculado, opcionesDeEnum } from '../components/Campos.jsx';
+import {
+  Texto,
+  Fecha,
+  Hora,
+  Selector,
+  SelectorFlotante,
+  AreaTexto,
+  Calculado,
+  opcionesDeEnum,
+} from '../components/Campos.jsx';
 import { SelectorFecha } from '../components/SelectorFecha.jsx';
 import {
   useOpcionesCatalogo,
@@ -139,23 +148,24 @@ export function Puntuales() {
           />
           Solo pendientes
         </label>
-        <select value={filtros.estado} onChange={(e) => cambiarFiltro('estado', e.target.value)}>
+        <SelectorFlotante label="Estado" value={filtros.estado} onChange={(e) => cambiarFiltro('estado', e.target.value)}>
           <option value="">Todos los estados</option>
           {ESTADOS.map((s) => (
             <option key={s} value={s}>
               {etiqueta(s)}
             </option>
           ))}
-        </select>
-        <select value={filtros.prioridad} onChange={(e) => cambiarFiltro('prioridad', e.target.value)}>
+        </SelectorFlotante>
+        <SelectorFlotante label="Prioridad" value={filtros.prioridad} onChange={(e) => cambiarFiltro('prioridad', e.target.value)}>
           <option value="">Toda prioridad</option>
           {PRIORIDADES.map((p) => (
             <option key={p} value={p}>
               {etiqueta(p)}
             </option>
           ))}
-        </select>
-        <select
+        </SelectorFlotante>
+        <SelectorFlotante
+          label="Responsable"
           value={filtros.responsableId}
           onChange={(e) => cambiarFiltro('responsableId', e.target.value)}
         >
@@ -165,7 +175,7 @@ export function Puntuales() {
               {a.texto}
             </option>
           ))}
-        </select>
+        </SelectorFlotante>
         <SelectorFecha
           valor={filtros.desde}
           onChange={(v) => cambiarFiltro('desde', v || '')}

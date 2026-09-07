@@ -18,7 +18,17 @@ import { Cabecera, SelectorPeriodo } from '../components/Cabecera.jsx';
 import { Tabla, Paginacion, useTabla } from '../components/Tabla.jsx';
 import { Panel, Stat, Aviso, Vacio, Progreso, Importe, Chip } from '../components/Comunes.jsx';
 import { Modal, Confirmar } from '../components/Modal.jsx';
-import { Texto, Fecha, Selector, AreaTexto, Monto, Check, Calculado, opcionesDeEnum } from '../components/Campos.jsx';
+import {
+  Texto,
+  Fecha,
+  Selector,
+  SelectorFlotante,
+  AreaTexto,
+  Monto,
+  Check,
+  Calculado,
+  opcionesDeEnum,
+} from '../components/Campos.jsx';
 import {
   useCatalogos,
   useOpcionesCatalogo,
@@ -148,12 +158,13 @@ export function Gastos() {
           value={tabla.q}
           onChange={(e) => tabla.setBusqueda(e.target.value)}
         />
-        <select value={filtros.tipo} onChange={(e) => cambiarFiltro('tipo', e.target.value)}>
+        <SelectorFlotante label="Tipo" value={filtros.tipo} onChange={(e) => cambiarFiltro('tipo', e.target.value)}>
           <option value="">Todos los tipos</option>
           <option value="EXPEDIENTE">Del expediente</option>
           <option value="ESTUDIO">General del estudio</option>
-        </select>
-        <select
+        </SelectorFlotante>
+        <SelectorFlotante
+          label="Reintegro"
           value={filtros.estadoReintegro}
           onChange={(e) => cambiarFiltro('estadoReintegro', e.target.value)}
         >
@@ -163,8 +174,9 @@ export function Gastos() {
               {etiqueta(s)}
             </option>
           ))}
-        </select>
-        <select
+        </SelectorFlotante>
+        <SelectorFlotante
+          label="Expediente"
           value={filtros.expedienteId}
           onChange={(e) => cambiarFiltro('expedienteId', e.target.value)}
         >
@@ -174,7 +186,7 @@ export function Gastos() {
               {e.caratula}
             </option>
           ))}
-        </select>
+        </SelectorFlotante>
 
         {seleccion.length > 0 && puede('gastos:escribir') ? (
           <span className="fila fila-fin" style={{ gap: 7 }}>

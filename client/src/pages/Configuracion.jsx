@@ -13,7 +13,7 @@ import { Cabecera } from '../components/Cabecera.jsx';
 import { Tabla } from '../components/Tabla.jsx';
 import { Panel, Aviso, Vacio, Cargando } from '../components/Comunes.jsx';
 import { Modal, Confirmar } from '../components/Modal.jsx';
-import { Texto, Numero, Monto, Selector, Check, opcionesDeEnum } from '../components/Campos.jsx';
+import { Texto, Numero, Monto, Selector, SelectorFlotante, Check, opcionesDeEnum } from '../components/Campos.jsx';
 import { SelectorFecha } from '../components/SelectorFecha.jsx';
 import { useAbogados, useConfig, useGuardar, errorDe } from '../hooks/useDatos.js';
 import { fecha, etiqueta, fechaHora } from '../lib/formato.js';
@@ -256,7 +256,8 @@ function Listas() {
       </Aviso>
 
       <div className="filtros">
-        <select
+        <SelectorFlotante
+          label="Catálogo"
           value={tipo}
           onChange={(e) => setTipo(e.target.value)}
           style={{ minWidth: 'min(240px, 100%)' }}
@@ -266,7 +267,7 @@ function Listas() {
               {texto}
             </option>
           ))}
-        </select>
+        </SelectorFlotante>
 
         {puede('catalogos:escribir') ? (
           <form
@@ -292,10 +293,10 @@ function Listas() {
               required
             />
             {tipo === 'RUBRO_GASTO' ? (
-              <select value={scope} onChange={(e) => setScope(e.target.value)}>
+              <SelectorFlotante label="Alcance" value={scope} onChange={(e) => setScope(e.target.value)}>
                 <option value="EXPEDIENTE">De expediente</option>
                 <option value="ESTUDIO">Del estudio</option>
-              </select>
+              </SelectorFlotante>
             ) : null}
             <button type="submit" className="btn btn-primario btn-chico" disabled={crear.isPending}>
               + Agregar
@@ -618,13 +619,13 @@ function CalendarioProcesal() {
           ) : null}
 
           <div className="filtros" style={{ padding: '10px 14px 0', marginBottom: 0 }}>
-            <select value={anio} onChange={(e) => setAnio(Number(e.target.value))}>
+            <SelectorFlotante label="Año" value={anio} onChange={(e) => setAnio(Number(e.target.value))}>
               {[anioActual - 1, anioActual, anioActual + 1].map((a) => (
                 <option key={a} value={a}>
                   {a}
                 </option>
               ))}
-            </select>
+            </SelectorFlotante>
           </div>
 
           <Tabla
@@ -985,7 +986,8 @@ function Auditoria() {
       </Aviso>
 
       <div className="filtros">
-        <select
+        <SelectorFlotante
+          label="Entidad"
           value={filtros.entidad}
           onChange={(e) => setFiltros((f) => ({ ...f, entidad: e.target.value, page: 1 }))}
         >
@@ -995,8 +997,9 @@ function Auditoria() {
               {e}
             </option>
           ))}
-        </select>
-        <select
+        </SelectorFlotante>
+        <SelectorFlotante
+          label="Acción"
           value={filtros.accion}
           onChange={(e) => setFiltros((f) => ({ ...f, accion: e.target.value, page: 1 }))}
         >
@@ -1006,7 +1009,7 @@ function Auditoria() {
               {etiqueta(a)}
             </option>
           ))}
-        </select>
+        </SelectorFlotante>
       </div>
 
       <Panel sinPadding>

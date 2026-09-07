@@ -1318,10 +1318,8 @@ table.tabla td > div > span.chico {
 }
 
 .campo input,
-.campo select,
 .campo textarea,
-.filtros input,
-.filtros select {
+.filtros input {
   background: rgba(0, 0, 0, 0.25);
   border: 1px solid var(--linea);
   border-radius: var(--r-sm);
@@ -1335,18 +1333,14 @@ table.tabla td > div > span.chico {
 }
 
 .campo input:hover:not(:disabled),
-.campo select:hover:not(:disabled),
 .campo textarea:hover:not(:disabled),
-.filtros input:hover,
-.filtros select:hover {
+.filtros input:hover {
   border-color: var(--linea-fuerte);
 }
 
 .campo input:focus,
-.campo select:focus,
 .campo textarea:focus,
-.filtros input:focus,
-.filtros select:focus {
+.filtros input:focus {
   outline: none;
   border-color: var(--oro);
   background: rgba(0, 0, 0, 0.35);
@@ -1359,7 +1353,6 @@ table.tabla td > div > span.chico {
 }
 
 .campo input:disabled,
-.campo select:disabled,
 .campo textarea:disabled {
   opacity: 0.55;
   cursor: not-allowed;
@@ -1371,16 +1364,110 @@ table.tabla td > div > span.chico {
   line-height: 1.55;
 }
 
-/* El navegador pinta el desplegable nativo; al menos se le da la flecha propia. */
-.campo select,
-.filtros select {
+/* --- Selector: FormControl + label flotante, estilo Material --------------
+   Todos los <select> de la app (filtros, cabeceras, navegacion y formularios
+   de modal) comparten este envoltorio: el label vive siempre "montado" sobre
+   el borde superior, como un FormControl outlined, en vez de arriba del
+   campo o ausente. --fondo-campo es el color detras del label, para que
+   "corte" la linea del borde igual que hace MUI con su notch; cada
+   contenedor (panel, modal) fija el propio para que no se note el corte. */
+:root {
+  --fondo-campo: var(--canvas);
+}
+.panel,
+.modal {
+  --fondo-campo: var(--superficie);
+}
+
+.selector-material {
+  position: relative;
+  min-width: 0;
+}
+
+.selector-material select {
   appearance: none;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.25);
   background-image: linear-gradient(45deg, transparent 50%, var(--texto-3) 50%),
     linear-gradient(135deg, var(--texto-3) 50%, transparent 50%);
   background-position: calc(100% - 15px) 52%, calc(100% - 10px) 52%;
   background-size: 5px 5px, 5px 5px;
   background-repeat: no-repeat;
-  padding-right: 28px;
+  border: 1px solid var(--linea);
+  border-radius: var(--r-sm);
+  color: var(--texto);
+  padding: 10px 28px 10px 11px;
+  font-size: var(--t-base);
+  font-family: inherit;
+  transition: border-color var(--transicion), background-color var(--transicion),
+    box-shadow var(--transicion);
+}
+
+.selector-material select:hover:not(:disabled) {
+  border-color: var(--linea-fuerte);
+}
+
+.selector-material select:focus {
+  outline: none;
+  border-color: var(--oro);
+  background-color: rgba(0, 0, 0, 0.35);
+  box-shadow: var(--brillo-oro);
+}
+
+.selector-material select:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.selector-material label {
+  position: absolute;
+  top: 0;
+  left: 9px;
+  transform: translateY(-50%);
+  background: var(--fondo-campo);
+  padding: 0 5px;
+  max-width: calc(100% - 18px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--texto-3);
+  pointer-events: none;
+  line-height: 1;
+}
+
+.selector-material label .obligatorio {
+  color: var(--oro);
+  margin-left: 3px;
+}
+
+.selector-material select:focus + label {
+  color: var(--oro);
+}
+
+.selector-material.con-error select {
+  border-color: var(--rojo);
+  background-color: var(--rojo-bg);
+}
+.selector-material.con-error select:focus {
+  box-shadow: 0 0 0 3px rgba(242, 85, 90, 0.16);
+}
+.selector-material.con-error label {
+  color: var(--rojo);
+}
+
+/* Variante chica: navegacion de mes/año dentro de un panel-titulo, donde no
+   entra el tamaño normal. */
+.selector-material.chico select {
+  padding: 4px 22px 4px 8px;
+  font-size: 11px;
+}
+.selector-material.chico label {
+  font-size: 8.5px;
+  left: 6px;
 }
 
 /* CAMPO CALCULADO: hereda la convención del Excel (lo que se carga vs. lo que
@@ -1408,13 +1495,11 @@ table.tabla td > div > span.chico {
 }
 
 .campo.con-error input,
-.campo.con-error select,
 .campo.con-error textarea {
   border-color: var(--rojo);
   background: var(--rojo-bg);
 }
 .campo.con-error input:focus,
-.campo.con-error select:focus,
 .campo.con-error textarea:focus {
   box-shadow: 0 0 0 3px rgba(242, 85, 90, 0.16);
 }
@@ -1473,11 +1558,18 @@ table.tabla td > div > span.chico {
   margin-bottom: var(--e4);
 }
 
-.filtros input,
-.filtros select {
+.filtros input {
   width: auto;
   min-width: min(150px, 100%);
   padding: 6px 10px;
+  font-size: var(--t-sm);
+}
+
+.filtros .selector-material {
+  min-width: min(150px, 100%);
+}
+.filtros .selector-material select {
+  padding: 6px 26px 6px 10px;
   font-size: var(--t-sm);
 }
 
@@ -1489,10 +1581,6 @@ table.tabla td > div > span.chico {
 label.fila {
   flex-shrink: 0;
   white-space: nowrap;
-}
-
-.filtros select {
-  padding-right: 26px;
 }
 
 .filtros input[type='search'] {
@@ -1508,8 +1596,9 @@ label.fila {
     flex: 1 1 100%;
   }
   .filtros select,
-  .filtros input:not([type='search']):not([type='checkbox']),
-  .filtros .selector-fecha {
+  .filtros .selector-material,
+  .filtros .selector-fecha,
+  .filtros input:not([type='search']):not([type='checkbox']) {
     flex: 1 1 150px;
   }
 }
