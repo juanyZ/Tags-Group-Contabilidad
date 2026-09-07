@@ -1592,7 +1592,8 @@ label.fila {
    despareja y apretada en pantallas chicas. Por debajo de 700px se reparten
    parejos y el buscador pasa a ocupar toda la fila, que es lo que mas se usa. */
 @media (max-width: 700px) {
-  .filtros input[type='search'] {
+  .filtros input[type='search'],
+  .filtros label.fila {
     flex: 1 1 100%;
   }
   .filtros select,

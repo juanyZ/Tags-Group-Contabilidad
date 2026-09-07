@@ -97,9 +97,23 @@ export function SelectorFecha({
         <span className={valor ? '' : 'vacio'}>
           {valor ? formatearCorta(valor) : placeholder || 'Elegir fecha'}
         </span>
-        <span className="selector-fecha-icono" aria-hidden="true">
-          📅
-        </span>
+        <svg
+          className="selector-fecha-icono"
+          aria-hidden="true"
+          viewBox="0 0 24 24"
+          width="15"
+          height="15"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <rect x="3" y="5" width="18" height="16" rx="2" />
+          <line x1="3" y1="10" x2="21" y2="10" />
+          <line x1="8" y1="2.5" x2="8" y2="6.5" />
+          <line x1="16" y1="2.5" x2="16" y2="6.5" />
+        </svg>
       </button>
 
       {abierto ? (
